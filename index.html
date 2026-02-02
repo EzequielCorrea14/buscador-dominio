@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda de Dominio</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <!-- Video de fondo -->
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="/video/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4">
+        Tu navegador no soporta video HTML5
+    </video>
+
+    <!-- Contenedor central -->
+    <div class="overlay">
+        <div class="box">
+            <input 
+    type="text"
+    placeholder="Ingrese su dominio"
+    id="dominio"
+    maxlength="7"
+>
+
+
+            <button>Buscar</button>
+        </div>
+    </div>
+<script>
+    const input = document.getElementById("dominio");
+
+    input.addEventListener("input", () => {
+        // Elimina todo lo que no sea alfanumérico
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, "");
+
+        // Limita a 7 caracteres (por seguridad extra)
+        if (input.value.length > 7) {
+            input.value = input.value.slice(0, 7);
+        }
+    });
+</script>
+
+</body>
+</html>
