@@ -1,50 +1,217 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Búsqueda de Dominio</title>
-    <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta de Dominio</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .logo {
+      width: 140px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: rgba(0,0,0,0.65);
+      padding: 20px;
+      border-radius: 12px;
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input { text-transform: uppercase; }
+
+    button {
+      background: #ffcc00;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .error { color: #ff6b6b; margin-top: 10px; text-align: center; }
+    .success { color: #7bed9f; margin-top: 10px; text-align: center; }
+
+    .data-box {
+      background: rgba(0,0,0,0.6);
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      word-break: break-word;
+    }
+
+    .hidden { display: none; }
+
+    .admin-btn {
+      margin-top: 10px;
+      background: #3498db;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Video de fondo -->
-    <video class="video-bg" autoplay muted loop playsinline>
-        <source src="/video/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4">
-        Tu navegador no soporta video HTML5
-    </video>
+<video autoplay muted loop>
+  <source src="/video/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4" />
+</video>
 
-    <div>
-        <img class="logo" src="/images/Diseño sin título.png" alt="imagen">
-    </div>
+<div class="container">
+  <img src="/images/Diseño sin título.png" class="logo" />
 
-    <!-- Contenedor central -->
-    <div class="overlay">
-        <div class="box">
-            <input 
-    type="text"
-    placeholder="Ingrese su dominio"
-    id="dominio"
-    maxlength="7"
->
+  <!-- BUSQUEDA CLIENTE -->
+  <div class="card" id="searchCard">
+    <input id="dominioInput" placeholder="Ingrese su dominio" maxlength="7" />
+    <button onclick="buscarDominio()">Buscar</button>
+    <div class="error" id="error"></div>
+    <button class="admin-btn" onclick="mostrarLogin()">Admin</button>
+  </div>
 
+  <!-- RESULTADO CLIENTE -->
+  <div class="card hidden" id="resultCard">
+    <div class="data-box" id="rDominio"></div>
+    <div class="data-box" id="rChasis"></div>
+    <div class="data-box" id="rFecha"></div>
+    <div class="data-box" id="rServicio"></div>
+    <div class="data-box" id="rObs"></div>
+  </div>
 
-            <button>Buscar</button>
-        </div>
-    </div>
+  <!-- LOGIN ADMIN -->
+  <div class="card hidden" id="loginCard">
+    <input id="email" placeholder="Email admin" />
+    <input id="password" type="password" placeholder="Contraseña" />
+    <button onclick="login()">Ingresar</button>
+    <div class="error" id="loginError"></div>
+  </div>
+
+  <!-- PANEL ADMIN -->
+  <div class="card hidden" id="adminCard">
+    <input id="aDominio" placeholder="Dominio (AB123CD)" maxlength="7" />
+    <input id="aChasis" placeholder="Chasis" />
+    <input id="aFecha" type="date" />
+    <input id="aServicio" placeholder="Servicio contratado" />
+    <input id="aObs" placeholder="Observaciones" />
+    <button onclick="guardarDominio()">Guardar / Actualizar</button>
+    <button onclick="logout()">Cerrar sesión</button>
+    <div class="success" id="adminSuccess"></div>
+    <div class="error" id="adminError"></div>
+  </div>
+</div>
+
 <script>
-    const input = document.getElementById("dominio");
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_AUTH_DOMAIN",
+    projectId: "TU_PROJECT_ID"
+  };
 
-    input.addEventListener("input", () => {
-        // Elimina todo lo que no sea alfanumérico
-        input.value = input.value.replace(/[^a-zA-Z0-9]/g, "");
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-        // Limita a 7 caracteres (por seguridad extra)
-        if (input.value.length > 7) {
-            input.value = input.value.slice(0, 7);
-        }
+  const regexAR = /^([A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/;
+
+  function buscarDominio() {
+    const dominio = dominioInput.value.toUpperCase();
+    error.innerText = "";
+
+    if (!regexAR.test(dominio)) {
+      error.innerText = "Dominio inválido";
+      return;
+    }
+
+    db.collection("vehiculos").doc(dominio).get().then(doc => {
+      if (!doc.exists) {
+        error.innerText = "Su dominio no está en nuestra base";
+        return;
+      }
+
+      const d = doc.data();
+      searchCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+
+      rDominio.innerText = "Dominio: " + d.dominio;
+      rChasis.innerText = "Chasis: " + d.chasis;
+      rFecha.innerText = "Fecha: " + d.fecha;
+      rServicio.innerText = "Servicio: " + d.servicio;
+      rObs.innerText = "Observaciones: " + d.observaciones;
     });
-</script>
+  }
 
+  function mostrarLogin() {
+    searchCard.classList.add("hidden");
+    loginCard.classList.remove("hidden");
+  }
+
+  function login() {
+    loginError.innerText = "";
+    auth.signInWithEmailAndPassword(email.value, password.value)
+      .then(() => {
+        loginCard.classList.add("hidden");
+        adminCard.classList.remove("hidden");
+      })
+      .catch(() => loginError.innerText = "Credenciales inválidas");
+  }
+
+  function logout() {
+    auth.signOut();
+    adminCard.classList.add("hidden");
+    searchCard.classList.remove("hidden");
+  }
+
+  function guardarDominio() {
+    adminError.innerText = "";
+    adminSuccess.innerText = "";
+
+    const dom = aDominio.value.toUpperCase();
+    if (!regexAR.test(dom)) {
+      adminError.innerText = "Dominio inválido";
+      return;
+    }
+
+    db.collection("vehiculos").doc(dom).set({
+      dominio: dom,
+      chasis: aChasis.value,
+      fecha: aFecha.value,
+      servicio: aServicio.value,
+      observaciones: aObs.value
+    }).then(() => {
+      adminSuccess.innerText = "Guardado correctamente";
+    });
+  }
+</script>
 </body>
 </html>
