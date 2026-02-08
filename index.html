@@ -77,17 +77,35 @@
 
     .hidden { display: none; }
 
-    .admin-btn {
-      margin-top: 10px;
-      background: #3498db;
+    .admin-icon {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 10;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 10px;
+      border-radius: 50%;
+      color: #fff;
     }
+
   </style>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="manifest" href="/images/site.webmanifest">
+
+
 </head>
 <body>
 
 <video autoplay muted loop>
   <source src="/video/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4" />
 </video>
+
+<div class="admin-icon" onclick="mostrarLogin()">👤</div>
 
 <div class="container">
   <img src="/images/Diseño sin título.png" class="logo" />
@@ -97,7 +115,7 @@
     <input id="dominioInput" placeholder="Ingrese su dominio" maxlength="7" />
     <button onclick="buscarDominio()">Buscar</button>
     <div class="error" id="error"></div>
-    <button class="admin-btn" onclick="mostrarLogin()">Admin</button>
+    
   </div>
 
   <!-- RESULTADO CLIENTE -->
@@ -132,5 +150,6 @@
 </div>
 
 <script src="app.js"></script>
+
 </body>
 </html>
