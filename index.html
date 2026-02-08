@@ -10,92 +10,15 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 
-    video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-    }
-
-    .container {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .logo {
-      width: 140px;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 360px;
-      background: rgba(0,0,0,0.65);
-      padding: 20px;
-      border-radius: 12px;
-      color: #fff;
-      margin-bottom: 15px;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
-
-    input { text-transform: uppercase; }
-
-    button {
-      background: #ffcc00;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .error { color: #ff6b6b; margin-top: 10px; text-align: center; }
-    .success { color: #7bed9f; margin-top: 10px; text-align: center; }
-
-    .data-box {
-      background: rgba(0,0,0,0.6);
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 8px;
-      word-break: break-word;
-    }
-
-    .hidden { display: none; }
-
-    .admin-icon {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
-      background: rgba(0,0,0,0.5);
-      padding: 8px 10px;
-      border-radius: 50%;
-      color: #fff;
-    }
-
-  </style>
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 <link rel="manifest" href="/images/site.webmanifest">
+
+<link rel="stylesheet" href="style.css">
+
 
 
 </head>
@@ -150,6 +73,33 @@
 </div>
 
 <script src="app.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script src="app.js"></script>
+
+<div id="adminPanel" style="display:none;" class="admin-panel">
+
+  <h2>Cargar patente</h2>
+
+  <input type="text" id="dominio" placeholder="Patente (AB123CD)" maxlength="7">
+
+  <input type="text" id="chasis" placeholder="Chasis">
+
+  <input type="text" id="fecha" placeholder="Fecha (DD/MM/AAAA)">
+
+  <input type="text" id="servicio" placeholder="Servicio contratado">
+
+  <textarea id="observaciones" placeholder="Observaciones"></textarea>
+
+  <button onclick="guardarPatente()">Guardar</button>
+
+</div>
+
+
 
 </body>
 </html>

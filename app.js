@@ -86,13 +86,6 @@ function guardarDominio() {
   });
 }
 
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
   authDomain: "app-patentes.firebaseapp.com",
@@ -102,5 +95,80 @@ const firebaseConfig = {
   appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_DOMINIO",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_BUCKET",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+
+function loginAdmin(email, password) {
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("Admin logueado");
+      mostrarPanelAdmin();
+    })
+    .catch(err => {
+      alert("Error: " + err.message);
+    });
+}
+
+
+function logoutAdmin() {
+  auth.signOut();
+}
+
+
+auth.onAuthStateChanged(user => {
+  const adminPanel = document.getElementById("adminPanel");
+
+  if (user) {
+    adminPanel.style.display = "block";
+  } else {
+    adminPanel.style.display = "none";
+  }
+});
+
+
+function validarDominio(dominio) {
+  const regex = /^[A-Z0-9]{6,7}$/;
+  return regex.test(dominio);
+}
+
+
+function guardarPatente() {
+
+  const dominio = document.getElementById("dominio").value.toUpperCase();
+  const chasis = document.getElementById("chasis").value;
+  const fecha = document.getElementById("fecha").value;
+  const servicio = document.getElementById("servicio").value;
+  const observaciones = document.getElementById("observaciones").value;
+
+  if (!validarDominio(dominio)) {
+    alert("Patente inválida");
+    return;
+  }
+
+  db.collection("patentes").doc(dominio).set({
+    dominio: dominio,
+    chasis: chasis,
+    fecha: fecha,
+    servicio: servicio,
+    observaciones: observaciones
+  })
+  .then(() => {
+    alert("Patente guardada correctamente");
+  })
+  .catch(error => {
+    alert("Error: " + error.message);
+  });
+}
+
