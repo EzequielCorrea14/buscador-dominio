@@ -1,19 +1,20 @@
-
-// Your web app's Firebase configuration
+// Configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
-  authDomain: "app-patentes.firebaseapp.com",
-  projectId: "app-patentes",
-  storageBucket: "app-patentes.firebasestorage.app",
-  messagingSenderId: "831225954806",
-  appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
+    apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
+    authDomain: "app-patentes.firebaseapp.com",
+    projectId: "app-patentes",
+    storageBucket: "app-patentes.firebasestorage.app",
+    messagingSenderId: "831225954806",
+    appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
+/**
+ * INICIALIZACIÓN CORRECTA
+ * He eliminado la línea que causaba el error ReferenceError
+ */
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 /**
@@ -25,40 +26,37 @@ async function validarYBuscar() {
     const patente = inputPatente.value.trim().toUpperCase();
 
     // Resetear estado de error
-    errorMsg.style.display = 'none';
+    if (errorMsg) errorMsg.style.display = 'none';
 
-    // 2. Validación de caracteres (Mínimo 6, Máximo 7)
+    // Validación de caracteres (Mínimo 6, Máximo 7)
     if (patente.length < 6 || patente.length > 7) {
         alert("Por favor, ingrese una patente válida (6 a 7 caracteres alfanuméricos).");
         return;
     }
 
     try {
-        // 3. Consulta a Firestore
-        // Buscamos el documento cuyo ID es la patente (Primary Key)
+        // Consulta a Firestore usando la sintaxis COMPAT
         const docRef = db.collection("vehiculos").doc(patente);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
-            // Si existe, guardamos los datos en sessionStorage para usarlos en la siguiente página
             const datosVehiculo = docSnap.data();
-            datosVehiculo.dominio = patente; // Guardamos el ID también
+            datosVehiculo.dominio = patente; 
             
             sessionStorage.setItem('vehiculoEncontrado', JSON.stringify(datosVehiculo));
 
-            // Redirigir a la página de resultados
+            // Asegúrate de que este archivo se llame exactamente "resultado.html"
             window.location.href = "resultado.html";
         } else {
-            // Si no existe, mostramos el error en pantalla
-            errorMsg.style.display = 'block';
+            if (errorMsg) errorMsg.style.display = 'block';
         }
     } catch (error) {
         console.error("Error al buscar en la base de datos:", error);
-        alert("Ocurrió un error en la conexión. Intente más tarde.");
+        alert("Ocurrió un error en la conexión. Verifique la consola (F12).");
     }
 }
 
-// Permitir que el usuario presione "Enter" en el input para buscar
+// Evento para la tecla Enter
 document.getElementById('patenteInput').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         validarYBuscar();
