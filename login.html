@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-   
-
+    <title>Acceso Administrador</title>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <video autoplay muted loop playsinline id="bg-video">
-    <source src="video.mp4" type="video/mp4">
-</video>
-    
+        <source src="copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/quicktime">
+        </video>
 
     <main class="container">
         <div class="glass-box">
-            <h2 style="color: white; margin-bottom: 20px;">ADMIN PANEL</h2>
-            <input type="email" id="adminEmail" placeholder="Email">
+            <h2 style="color: white; margin-bottom: 20px; letter-spacing: 2px;">ADMIN PANEL</h2>
+            
+            <input type="email" id="adminEmail" placeholder="Correo electrónico" spellcheck="false">
+            
             <div class="password-wrapper">
-    <input type="password" id="adminPass" placeholder="Contraseña">
-    <span id="togglePassword" class="eye-icon">👁️</span>
-</div>
-            <button onclick="loginAdmin()">ENTRAR</button>
-            <p id="loginError" class="error-text">Credenciales incorrectas</p>
+                <input type="password" id="adminPass" placeholder="Contraseña">
+                <span id="togglePassword" class="eye-icon">👁️</span>
+            </div>
+
+            <button id="btnLogin" onclick="loginAdmin()">ENTRAR</button>
+            
+            <p id="loginError" class="error-text">Credenciales incorrectas o error de conexión</p>
         </div>
     </main>
 
     <script>
-        // Copia aquí la misma configuración de Firebase de tu script.js
-        const firebaseConfig = {
+        // --- PEGA TUS DATOS DE FIREBASE AQUÍ ---
+     const firebaseConfig = {
   apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
   authDomain: "app-patentes.firebaseapp.com",
   projectId: "app-patentes",
@@ -39,30 +43,48 @@
   messagingSenderId: "831225954806",
   appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
-        firebase.initializeApp(firebaseConfig);
 
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Lógica de Login
         async function loginAdmin() {
-            const email = document.getElementById('adminEmail').value;
+            const email = document.getElementById('adminEmail').value.trim();
             const pass = document.getElementById('adminPass').value;
+            const btn = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('loginError');
+
+            errorMsg.style.display = 'none';
+            btn.innerText = "VERIFICANDO...";
+            btn.disabled = true;
+
             try {
                 await firebase.auth().signInWithEmailAndPassword(email, pass);
-                window.location.href = "panel.html"; // Redirige al panel de carga
+                window.location.href = "panel.html"; 
             } catch (error) {
-                document.getElementById('loginError').style.display = 'block';
+                console.error("Error de login:", error.code);
+                btn.innerText = "ENTRAR";
+                btn.disabled = false;
+                errorMsg.style.display = 'block';
             }
         }
 
+        // Lógica del Ojo para la contraseña
         const togglePassword = document.querySelector('#togglePassword');
-const password = document.querySelector('#adminPass');
+        const passwordInput = document.querySelector('#adminPass');
 
-togglePassword.addEventListener('click', function (e) {
-    // Cambiar el tipo de input
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    
-    // Cambiar el icono (Ojo abierto / Ojo con raya o cerrado)
-    this.textContent = type === 'password' ? '👁️' : '🙈'; 
-});
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        // Permitir entrar con la tecla Enter
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loginAdmin();
+        });
     </script>
 </body>
 </html>
