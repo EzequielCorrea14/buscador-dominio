@@ -46,7 +46,7 @@ async function validarYBuscar() {
             sessionStorage.setItem('vehiculoEncontrado', JSON.stringify(datosVehiculo));
 
             // Asegúrate de que este archivo se llame exactamente "resultado.html"
-            window.location.href = "resultado.html";
+            window.location.href = "./resultados.html";
         } else {
             if (errorMsg) errorMsg.style.display = 'block';
         }
