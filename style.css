@@ -26,9 +26,9 @@ body, html {
     width: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    z-index: -1000; 
-    object-fit: cover;
-    display: block !important; /* CAMBIO: Asegura que no esté oculto */
+    z-index: -1000;
+    object-fit: cover; /* Mantiene la proporción */
+    background-size: cover;
 }
 
 /* Header y Logo centrado arriba */

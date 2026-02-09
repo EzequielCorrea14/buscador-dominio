@@ -75,3 +75,12 @@ function logout() {
         window.location.href = "login.html";
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('bg-video');
+    
+    // Intentar reproducir manualmente al cargar
+    video.play().catch(error => {
+        console.log("El navegador bloqueó el autoplay, esperando interacción.");
+    });
+});
