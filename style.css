@@ -69,11 +69,23 @@ input {
     border: none;
     outline: none;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: none;
     margin-bottom: 15px;
     background-color: #fff;
     color: #333;
     font-weight: bold;
+}
+
+#patenteInput, #p_dominio {
+    text-transform: uppercase;
+}
+
+#adminEmail {
+    text-transform: lowercase; /* Los correos suelen ser en minúsculas */
+}
+
+#adminPass {
+    text-transform: none; /* La contraseña debe ser exacta */
 }
 
 input::placeholder {
