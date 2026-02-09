@@ -1,12 +1,20 @@
-// 1. Configuración de Firebase (Reemplaza con tus datos de la consola de Firebase)
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROYECTO",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_ID",
-    appId: "TU_APP_ID"
+  apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
+  authDomain: "app-patentes.firebaseapp.com",
+  projectId: "app-patentes",
+  storageBucket: "app-patentes.firebasestorage.app",
+  messagingSenderId: "831225954806",
+  appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
