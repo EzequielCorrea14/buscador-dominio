@@ -6,24 +6,9 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body, html {
-    height: 100%;
-    overflow: hidden; /* Evita scroll innecesario en móviles */
-}
+
 
 /* Video de fondo a pantalla completa */
-#bg-video {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    z-index: -100;
-    transform: translateX(-50%) translateY(-50%);
-    object-fit: cover;
-}
 
 /* Header y Logo */
 header {
@@ -40,13 +25,7 @@ header {
 }
 
 /* Contenedor principal */
-.container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 25px;
-}
+
 
 /* El cuadro negro transparente */
 .glass-box {
@@ -224,4 +203,26 @@ label {
 
 .eye-icon:active {
     opacity: 1;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: transparent !important; /* Forzamos transparencia */
+}
+
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: -1000; /* Aseguramos que esté al fondo */
+    object-fit: cover;
+}
+
+.container {
+    background: transparent; /* El contenedor principal no debe tener fondo */
 }
