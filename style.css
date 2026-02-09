@@ -6,37 +6,67 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
+/* Base de la pantalla */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Evita scrolls raros en móviles */
+    background-color: #000; /* Fondo negro de respaldo por si el video falla */
+}
 
 /* Video de fondo a pantalla completa */
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: -1000; 
+    object-fit: cover;
+}
 
-/* Header y Logo */
+/* Header y Logo centrado arriba */
 header {
     width: 100%;
     display: flex;
     justify-content: center;
     position: absolute;
-    top: 40px;
+    top: 10%; /* Ajustado para que no tape el contenido central */
+    z-index: 10;
 }
 
 .logo {
-    width: 180px; /* Ajusta según tu logo */
+    width: 150px; 
     height: auto;
 }
 
-/* Contenedor principal */
-
+/* Contenedor principal que centra todo */
+.container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: transparent;
+    position: relative;
+    z-index: 5;
+}
 
 /* El cuadro negro transparente */
 .glass-box {
     background-color: rgba(0, 0, 0, 0.75);
-    padding: 40px 20px;
+    padding: 30px 20px;
     border-radius: 20px;
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     text-align: center;
+    backdrop-filter: blur(5px); /* Efecto esmerilado opcional */
 }
 
 /* Estilo del Input */
@@ -48,28 +78,27 @@ input {
     border: none;
     outline: none;
     text-align: center;
-    text-transform: none;
     margin-bottom: 15px;
     background-color: #fff;
     color: #333;
     font-weight: bold;
+    text-transform: none; /* Por defecto normal */
 }
 
+/* Forzar mayúsculas solo en patentes */
 #patenteInput, #p_dominio {
-    text-transform: uppercase;
+    text-transform: uppercase !important;
 }
 
+/* Forzar minúsculas en email */
 #adminEmail {
-    text-transform: lowercase; /* Los correos suelen ser en minúsculas */
-}
-
-#adminPass {
-    text-transform: none; /* La contraseña debe ser exacta */
+    text-transform: lowercase;
 }
 
 input::placeholder {
     color: #999;
     font-weight: normal;
+    text-transform: none;
 }
 
 /* Estilo del Botón */
@@ -79,15 +108,20 @@ button {
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
-    background-color: #d90429; /* Color llamativo (rojo/automotriz) */
+    background-color: #d90429;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 button:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
+}
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
 }
 
 /* Mensajes de error */
@@ -95,7 +129,7 @@ button:active {
     color: #ff4d4d;
     font-size: 0.9rem;
     margin-top: 15px;
-    display: none; /* Oculto por defecto */
+    display: none; 
 }
 
 /* Enlace admin */
@@ -104,24 +138,24 @@ button:active {
     bottom: 20px;
     width: 100%;
     text-align: center;
+    z-index: 10;
 }
 
 .admin-access a {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
     font-size: 0.8rem;
 }
 
-
-/* Estilos específicos para la página de resultados */
+/* --- ESTILOS DE RESULTADOS --- */
 .results-box {
-    text-align: left; /* Alineación para lectura */
-    max-width: 90%;   /* Un poco más ancho en móviles */
+    text-align: left;
+    max-width: 95%;
 }
 
 .title-res {
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 20px;
     text-align: center;
     border-bottom: 1px solid rgba(255,255,255,0.2);
@@ -131,64 +165,51 @@ button:active {
 .data-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
+    gap: 12px;
+    justify-content: flex-start;
 }
 
 .info-block {
     display: flex;
     flex-direction: column;
-    width: fit-content; /* El box se ajusta al contenido */
-    min-width: 120px;
+    width: fit-content; 
+    min-width: 100px;
 }
 
 .full-width {
-    width: 100%; /* Para que observaciones ocupe todo el ancho si es largo */
+    width: 100%;
 }
 
 label {
     color: #d90429;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     text-transform: uppercase;
 }
 
 .data-field {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
     border-left: 3px solid #d90429;
-    word-break: break-word; /* Para que no se rompa el diseño si el texto es muy largo */
+    word-break: break-word;
 }
 
-.long-text {
-    min-height: 60px;
-}
-
-.btn-volver {
-    margin-top: 25px;
-    background-color: transparent;
-    border: 1px solid #fff;
-}
-
-
-/* Contenedor del input y el ojo */
+/* --- LOGIN WRAPPER & OJO --- */
 .password-wrapper {
     position: relative;
     width: 100%;
     margin-bottom: 20px;
 }
 
-/* Ajuste del input para que el texto no tape al ojo */
 .password-wrapper input {
-    margin-bottom: 0; /* Quitamos el margen de abajo aquí para dárselo al wrapper */
-    padding-right: 50px; /* Espacio para el icono */
+    margin-bottom: 0;
+    padding-right: 50px;
 }
 
-/* Estilo del icono del ojo */
 .eye-icon {
     position: absolute;
     right: 15px;
@@ -196,33 +217,6 @@ label {
     transform: translateY(-50%);
     cursor: pointer;
     font-size: 1.2rem;
-    user-select: none;
-    filter: grayscale(100%); /* Lo hace ver más serio */
-    opacity: 0.6;
-}
-
-.eye-icon:active {
-    opacity: 1;
-}
-
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: transparent !important; /* Forzamos transparencia */
-}
-
-#bg-video {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    transform: translate(-50%, -50%);
-    z-index: -1000; /* Aseguramos que esté al fondo */
-    object-fit: cover;
-}
-
-.container {
-    background: transparent; /* El contenedor principal no debe tener fondo */
+    z-index: 20;
+    opacity: 0.7;
 }
