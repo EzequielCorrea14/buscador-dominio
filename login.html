@@ -14,12 +14,16 @@
     <video autoplay muted loop playsinline id="bg-video">
     <source src="/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4">
 </video>
+    
 
     <main class="container">
         <div class="glass-box">
             <h2 style="color: white; margin-bottom: 20px;">ADMIN PANEL</h2>
             <input type="email" id="adminEmail" placeholder="Email">
-            <input type="password" id="adminPass" placeholder="Contraseña">
+            <div class="password-wrapper">
+    <input type="password" id="adminPass" placeholder="Contraseña">
+    <span id="togglePassword" class="eye-icon">👁️</span>
+</div>
             <button onclick="loginAdmin()">ENTRAR</button>
             <p id="loginError" class="error-text">Credenciales incorrectas</p>
         </div>

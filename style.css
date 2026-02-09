@@ -182,3 +182,34 @@ label {
     background-color: transparent;
     border: 1px solid #fff;
 }
+
+
+/* Contenedor del input y el ojo */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Ajuste del input para que el texto no tape al ojo */
+.password-wrapper input {
+    margin-bottom: 0; /* Quitamos el margen de abajo aquí para dárselo al wrapper */
+    padding-right: 50px; /* Espacio para el icono */
+}
+
+/* Estilo del icono del ojo */
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2rem;
+    user-select: none;
+    filter: grayscale(100%); /* Lo hace ver más serio */
+    opacity: 0.6;
+}
+
+.eye-icon:active {
+    opacity: 1;
+}
