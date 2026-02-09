@@ -33,7 +33,10 @@
                     maxlength="7"
                     autocomplete="off"
                 >
-                <button id="btnBuscar" onclick="validarYBuscar()">BUSCAR</button>
+                <button id="btnBuscar" onclick="validarYBuscar()">
+    <span id="btnText">BUSCAR</span>
+    <div id="spinner" class="spinner" style="display: none;"></div>
+</button>
             </div>
             <p id="errorMsg" class="error-text">Su dominio no está en nuestra base</p>
         </div>

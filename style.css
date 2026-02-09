@@ -123,8 +123,9 @@ button:active {
 }
 
 button:disabled {
-    background-color: #666;
+    background-color: #555 !important; /* Color grisáceo */
     cursor: not-allowed;
+    transform: none !important; /* Que no se mueva al clickear */
 }
 
 /* Mensajes de error */
@@ -222,4 +223,30 @@ label {
     font-size: 1.2rem;
     z-index: 20;
     opacity: 0.7;
+}
+
+/* Estilos para el Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Estado cuando el botón está cargando */
+button:disabled {
+    background-color: #88021a !important; /* Un rojo más oscuro */
+    cursor: not-allowed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
