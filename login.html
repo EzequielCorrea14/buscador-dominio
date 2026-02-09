@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="/copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4">
+    </video>
+
+    <main class="container">
+        <div class="glass-box">
+            <h2 style="color: white; margin-bottom: 20px;">ADMIN PANEL</h2>
+            <input type="email" id="adminEmail" placeholder="Email">
+            <input type="password" id="adminPass" placeholder="Contraseña">
+            <button onclick="loginAdmin()">ENTRAR</button>
+            <p id="loginError" class="error-text">Credenciales incorrectas</p>
+        </div>
+    </main>
+
+    <script>
+        // Copia aquí la misma configuración de Firebase de tu script.js
+        const firebaseConfig = { /* ...tus datos... */ };
+        firebase.initializeApp(firebaseConfig);
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, pass);
+                window.location.href = "panel.html"; // Redirige al panel de carga
+            } catch (error) {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

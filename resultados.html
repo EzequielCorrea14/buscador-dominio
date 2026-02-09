@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Vehículo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="tu-video.mp4" type="video/mp4">
+    </video>
+
+    <main class="container">
+        <div class="glass-box results-box">
+            <h2 class="title-res">DATOS DEL VEHÍCULO</h2>
+            
+            <div class="data-wrapper">
+                <div class="info-block">
+                    <label>DOMINIO</label>
+                    <div id="res-dominio" class="data-field">---</div>
+                </div>
+
+                <div class="info-block">
+                    <label>CHASIS</label>
+                    <div id="res-chasis" class="data-field">---</div>
+                </div>
+
+                <div class="info-block">
+                    <label>FECHA</label>
+                    <div id="res-fecha" class="data-field">---</div>
+                </div>
+
+                <div class="info-block">
+                    <label>SERVICIO CONTRATADO</label>
+                    <div id="res-servicio" class="data-field">---</div>
+                </div>
+
+                <div class="info-block full-width">
+                    <label>OBSERVACIONES</label>
+                    <div id="res-obs" class="data-field long-text">---</div>
+                </div>
+            </div>
+
+            <button onclick="window.location.href='index.html'" class="btn-volver">VOLVER</button>
+        </div>
+    </main>
+
+    <script>
+        // Lógica para mostrar los datos cargados en el index.js
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = JSON.parse(sessionStorage.getItem('vehiculoEncontrado'));
+
+            if (!data) {
+                window.location.href = 'index.html'; // Redirigir si no hay datos
+                return;
+            }
+
+            // Inyectar datos en el HTML
+            document.getElementById('res-dominio').textContent = data.dominio;
+            document.getElementById('res-chasis').textContent = data.chasis;
+            document.getElementById('res-fecha').textContent = data.fecha;
+            document.getElementById('res-servicio').textContent = data.servicio;
+            document.getElementById('res-obs').textContent = data.observaciones;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Datos</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <main class="container" style="overflow-y: auto; display: block; padding-top: 50px;">
+        <div class="glass-box" style="max-width: 500px; margin: auto;">
+            <h3 style="color:white; margin-bottom:15px;">CARGAR NUEVO DOMINIO</h3>
+            
+            <input type="text" id="p_dominio" placeholder="DOMINIO (7 Dígitos)" maxlength="7">
+            <input type="text" id="p_chasis" placeholder="N° CHASIS">
+            <input type="date" id="p_fecha">
+            <input type="text" id="p_servicio" placeholder="SERVICIO CONTRATADO">
+            <textarea id="p_obs" placeholder="OBSERVACIONES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px;"></textarea>
+            
+            <button id="btnGuardar" onclick="guardarDato()">GUARDAR EN BASE DE DATOS</button>
+            <button onclick="logout()" style="background: gray; margin-top: 10px;">CERRAR SESIÓN</button>
+        </div>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>

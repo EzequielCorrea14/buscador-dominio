@@ -1,81 +1,184 @@
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-    video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-    }
+body, html {
+    height: 100%;
+    overflow: hidden; /* Evita scroll innecesario en móviles */
+}
 
-    .container {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+/* Video de fondo a pantalla completa */
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+}
 
-    .logo {
-      width: 140px;
-      margin-bottom: 20px;
-    }
+/* Header y Logo */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 40px;
+}
 
-    .card {
-      width: 100%;
-      max-width: 360px;
-      background: rgba(0,0,0,0.65);
-      padding: 20px;
-      border-radius: 12px;
-      color: #fff;
-      margin-bottom: 15px;
-    }
+.logo {
+    width: 180px; /* Ajusta según tu logo */
+    height: auto;
+}
 
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
+/* Contenedor principal */
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 25px;
+}
 
-    input { text-transform: uppercase; }
+/* El cuadro negro transparente */
+.glass-box {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 40px 20px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
 
-    button {
-      background: #ffcc00;
-      font-weight: bold;
-      cursor: pointer;
-    }
+/* Estilo del Input */
+input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    background-color: #fff;
+    color: #333;
+    font-weight: bold;
+}
 
-    .error { color: #ff6b6b; margin-top: 10px; text-align: center; }
-    .success { color: #7bed9f; margin-top: 10px; text-align: center; }
+input::placeholder {
+    color: #999;
+    font-weight: normal;
+}
 
-    .data-box {
-      background: rgba(0,0,0,0.6);
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 8px;
-      word-break: break-word;
-    }
+/* Estilo del Botón */
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #d90429; /* Color llamativo (rojo/automotriz) */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
-    .hidden { display: none; }
+button:active {
+    transform: scale(0.98);
+}
 
-    .admin-icon {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
-      background: rgba(0,0,0,0.5);
-      padding: 8px 10px;
-      border-radius: 50%;
-      color: #fff;
-    }
+/* Mensajes de error */
+.error-text {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    display: none; /* Oculto por defecto */
+}
 
-  </style>
+/* Enlace admin */
+.admin-access {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.admin-access a {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+
+/* Estilos específicos para la página de resultados */
+.results-box {
+    text-align: left; /* Alineación para lectura */
+    max-width: 90%;   /* Un poco más ancho en móviles */
+}
+
+.title-res {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 10px;
+}
+
+.data-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+    width: fit-content; /* El box se ajusta al contenido */
+    min-width: 120px;
+}
+
+.full-width {
+    width: 100%; /* Para que observaciones ocupe todo el ancho si es largo */
+}
+
+label {
+    color: #d90429;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.data-field {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    border-left: 3px solid #d90429;
+    word-break: break-word; /* Para que no se rompa el diseño si el texto es muy largo */
+}
+
+.long-text {
+    min-height: 60px;
+}
+
+.btn-volver {
+    margin-top: 25px;
+    background-color: transparent;
+    border: 1px solid #fff;
+}

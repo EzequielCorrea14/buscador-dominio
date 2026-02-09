@@ -1,105 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consulta de Dominio</title>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-<link rel="manifest" href="/images/site.webmanifest">
-
-<link rel="stylesheet" href="style.css">
-
-
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Dominio</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<video autoplay muted loop>
-  <source src="copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4" />
-</video>
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="copy_3E59D4A7-0603-48B2-BF23-71B1E26DE2EE.MOV" type="video/mp4">
+        Tu navegador no soporta videos.
+    </video>
 
-<div class="admin-icon" onclick="mostrarLogin()">👤</div>
+    <header>
+        <img src="/images/Diseño sin título.png" alt="Logo Marca" class="logo">
+    </header>
 
-<div class="container">
-  <img src="/images/Diseño sin título.png" class="logo" />
+    <main class="container">
+        <div class="glass-box">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="patenteInput" 
+                    placeholder="INGRESAR PATENTE" 
+                    maxlength="7"
+                    autocomplete="off"
+                >
+                <button id="btnBuscar" onclick="validarYBuscar()">BUSCAR</button>
+            </div>
+            <p id="errorMsg" class="error-text">Su dominio no está en nuestra base</p>
+        </div>
+    </main>
 
-  <!-- BUSQUEDA CLIENTE -->
-  <div class="card" id="searchCard">
-    <input id="dominioInput" placeholder="Ingrese su dominio" maxlength="7" />
-    <button onclick="buscarDominio()">Buscar</button>
-    <div class="error" id="error"></div>
-    
-  </div>
+    <footer class="admin-access">
+        <a href="login.html">Acceso Admin</a>
+    </footer>
 
-  <!-- RESULTADO CLIENTE -->
-  <div class="card hidden" id="resultCard">
-    <div class="data-box" id="rDominio"></div>
-    <div class="data-box" id="rChasis"></div>
-    <div class="data-box" id="rFecha"></div>
-    <div class="data-box" id="rServicio"></div>
-    <div class="data-box" id="rObs"></div>
-  </div>
-
-  <!-- LOGIN ADMIN -->
-  <div class="card hidden" id="loginCard">
-    <input id="email" placeholder="Email admin" />
-    <input id="password" type="password" placeholder="Contraseña" />
-    <button onclick="login()">Ingresar</button>
-    <div class="error" id="loginError"></div>
-  </div>
-
-  <!-- PANEL ADMIN -->
-  <div class="card hidden" id="adminCard">
-    <input id="aDominio" placeholder="Dominio (AB123CD)" maxlength="7" />
-    <input id="aChasis" placeholder="Chasis" />
-    <input id="aFecha" type="date" />
-    <input id="aServicio" placeholder="Servicio contratado" />
-    <input id="aObs" placeholder="Observaciones" />
-    <button onclick="guardarDominio()">Guardar / Actualizar</button>
-    <button onclick="logout()">Cerrar sesión</button>
-    <div class="success" id="adminSuccess"></div>
-    <div class="error" id="adminError"></div>
-  </div>
-</div>
-
-<script src="app.js"></script>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-
-
-<div id="adminPanel" style="display:none;" class="admin-panel">
-
-  <h2>Cargar patente</h2>
-
-  <input type="text" id="dominio" placeholder="Patente (AB123CD)" maxlength="7">
-
-  <input type="text" id="chasis" placeholder="Chasis">
-
-  <input type="text" id="fecha" placeholder="Fecha (DD/MM/AAAA)">
-
-  <input type="text" id="servicio" placeholder="Servicio contratado">
-
-  <textarea id="observaciones" placeholder="Observaciones"></textarea>
-
-  <button onclick="guardarPatente()">Guardar</button>
-
-</div>
-
-
-
+    <script src="script.js"></script>
 </body>
 </html>
