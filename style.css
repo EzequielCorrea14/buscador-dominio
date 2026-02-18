@@ -6,26 +6,31 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
+/* Base de la pantalla: Quitamos el fondo para que se vea lo de atrás */
 html, body {
     width: 100%;
     height: 100%;
-    /* El fondo negro es clave para que no parpadee en blanco */
-    background-color: #000 !important;
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* Respaldo inicial */
     overflow: hidden; 
 }
 
-/* VIDEO DE FONDO - CORREGIDO */
-#bg-video {
+/* VIDEO DE FONDO - MÁXIMA PRIORIDAD VISUAL */
+video#bg-video {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1; /* Se mantiene al fondo */
-    object-fit: cover; /* Asegura que cubra toda la pantalla sin deformarse */
+    z-index: -1; 
+    object-fit: cover;
+    display: block !important;
+    /* Evita que cualquier filtro del body lo oculte */
+    background: #000; 
 }
 
-/* CONTENEDOR - AJUSTADO */
+/* CONTENEDOR - Hacemos el fondo transparente */
 .container {
     width: 100%;
     height: 100vh;
@@ -36,6 +41,7 @@ html, body {
     padding: 20px;
     position: relative;
     z-index: 1;
+    background: transparent !important; /* Forzamos transparencia */
 }
 
 header {
@@ -88,22 +94,24 @@ button {
     text-transform: uppercase;
 }
 
-/* BOTÓN LOGUEO - CORREGIDO */
+/* BOTÓN LOGUEO - FIJO Y SIEMPRE VISIBLE */
 .admin-access {
-    position: fixed; /* Lo fijamos a la pantalla, no al contenido */
-    bottom: 30px; /* Separado del borde inferior */
+    position: fixed; 
+    bottom: 30px; 
     left: 0;
     width: 100%;
     text-align: center;
-    z-index: 10; /* Asegura que esté por encima del video */
+    z-index: 10; 
 }
 
 .admin-access a {
-    color: rgba(255, 255, 255, 0.6); /* Un gris claro elegante */
+    color: rgba(255, 255, 255, 0.6) !important;
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 1px;
+    display: inline-block;
+    padding: 10px;
 }
 
 /* AJUSTE PARA PANTALLAS MINI */
