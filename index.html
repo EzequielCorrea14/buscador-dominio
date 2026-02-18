@@ -2,28 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Dominioo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consulta de Dominio</title>
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video" poster="imagen-de-fondo.jpg">
-    
-        <source src="video.mp4.MOV" type="video/mp4">
+        <source src="video.mp4" type="video/mp4">
         Tu navegador no soporta videos.
-        
     </video>
 
-    <header>
-        <img src="logo.png" alt="Logo Marca" class="logo">
-    </header>
-
     <main class="container">
+        <header>
+            <img src="logo.png" alt="Logo Marca" class="logo">
+        </header>
+
         <div class="glass-box">
             <div class="input-group">
                 <input 
@@ -34,9 +32,9 @@
                     autocomplete="off"
                 >
                 <button id="btnBuscar" onclick="validarYBuscar()">
-    <span id="btnText">BUSCAR</span>
-    <div id="spinner" class="spinner" style="display: none;"></div>
-</button>
+                    <span id="btnText">BUSCAR</span>
+                    <div id="spinner" class="spinner" style="display: none;"></div>
+                </button>
             </div>
             <p id="errorMsg" class="error-text">Su dominio no está en nuestra base</p>
         </div>
