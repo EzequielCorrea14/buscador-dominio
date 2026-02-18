@@ -1,15 +1,22 @@
-/* Busca la sección body, html y déjala así */
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Base de la pantalla */
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow-x: hidden; /* Evita scroll horizontal */
-    overflow-y: auto;   /* Permite scroll vertical si los datos son muchos */
-    background-color: transparent !important; 
+    overflow: hidden;
+    background-color: transparent !important; /* CAMBIO: Quita el negro */
 }
 
-/* Mejora el soporte de video */
+/* Video de fondo a pantalla completa */
 #bg-video {
     position: fixed;
     top: 50%;
@@ -20,6 +27,226 @@ body, html {
     height: auto;
     transform: translate(-50%, -50%);
     z-index: -1000;
-    object-fit: cover;
-    /* Elimina background-size de aquí, no es necesario para el tag video */
+    object-fit: cover; /* Mantiene la proporción */
+    background-size: cover;
+}
+
+/* Header y Logo centrado arriba */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 10%; /* Ajustado para que no tape el contenido central */
+    z-index: 10;
+}
+
+.logo {
+    width: 150px; 
+    height: auto;
+}
+
+/* Contenedor principal que centra todo */
+.container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: transparent;
+    position: relative;
+    z-index: 5;
+}
+
+/* El cuadro negro transparente */
+.glass-box {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 30px 20px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    backdrop-filter: blur(5px); /* Efecto esmerilado opcional */
+}
+
+/* Estilo del Input */
+input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    text-align: center;
+    margin-bottom: 15px;
+    background-color: #fff;
+    color: #333;
+    font-weight: bold;
+    text-transform: none; /* Por defecto normal */
+}
+
+/* Forzar mayúsculas solo en patentes */
+#patenteInput, #p_dominio {
+    text-transform: uppercase !important;
+}
+
+/* Forzar minúsculas en email */
+#adminEmail {
+    text-transform: lowercase;
+}
+
+input::placeholder {
+    color: #999;
+    font-weight: normal;
+    text-transform: none;
+}
+
+/* Estilo del Botón */
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #d90429;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+button:disabled {
+    background-color: #555 !important; /* Color grisáceo */
+    cursor: not-allowed;
+    transform: none !important; /* Que no se mueva al clickear */
+}
+
+/* Mensajes de error */
+.error-text {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    display: none; 
+}
+
+/* Enlace admin */
+.admin-access {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.admin-access a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+/* --- ESTILOS DE RESULTADOS --- */
+.results-box {
+    text-align: left;
+    max-width: 95%;
+}
+
+.title-res {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 10px;
+}
+
+.data-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-start;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+    width: fit-content; 
+    min-width: 100px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+label {
+    color: #d90429;
+    font-size: 0.65rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+}
+
+.data-field {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    border-left: 3px solid #d90429;
+    word-break: break-word;
+}
+
+/* --- LOGIN WRAPPER & OJO --- */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.password-wrapper input {
+    margin-bottom: 0;
+    padding-right: 50px;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2rem;
+    z-index: 20;
+    opacity: 0.7;
+}
+
+/* Estilos para el Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Estado cuando el botón está cargando */
+button:disabled {
+    background-color: #88021a !important; /* Un rojo más oscuro */
+    cursor: not-allowed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
