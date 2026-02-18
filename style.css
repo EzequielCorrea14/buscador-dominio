@@ -3,22 +3,21 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Base de la pantalla - CORREGIDO PARA QUE SE VEA EL VIDEO */
+/* Base de la pantalla - TOTALMENTE TRANSPARENTE */
 body, html {
     margin: 0;
     padding: 0;
+    height: 100%;
     width: 100%;
-    min-height: 100%;
-    /* Quitamos el color sólido que tapaba el fondo */
-    background-color: transparent; 
+    background-color: transparent !important; /* CLAVE: Si es negro, tapa el video */
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-/* Video de fondo - Volvemos a la configuración inicial que te funcionaba */
+/* Video de fondo - Restaurado a tu versión inicial funcional */
 #bg-video {
     position: fixed;
     top: 50%;
@@ -28,42 +27,30 @@ body, html {
     width: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    z-index: -1000; /* Volvemos al valor que tenías al principio */
+    z-index: -1000; /* Detrás de absolutamente todo */
     object-fit: cover;
-    /* Eliminamos el background-color de aquí para evitar el cuadro negro */
 }
 
-/* Contenedor principal - Ajuste de escala suave */
+/* Contenedor principal */
 .container {
     min-height: 100vh;
     width: 100%;
     display: flex;
-    flex-direction: column; /* Para que el logo esté arriba de la caja */
+    flex-direction: column;
     align-items: center; 
     justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 5;
+    z-index: 5; /* Por encima del video */
 }
 
-/* Logo - Escala mejorada */
-header {
-    margin-bottom: 20px;
-}
-
-.logo {
-    width: 150px;
-    max-width: 40vw;
-    height: auto;
-}
-
-/* El cuadro negro transparente - Glassmorphism */
+/* Cuadro transparente */
 .glass-box {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 30px 20px;
     border-radius: 20px;
     width: 100%;
-    max-width: 380px;
+    max-width: 400px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     text-align: center;
@@ -71,39 +58,47 @@ header {
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* Inputs y botones */
-input, button {
+/* --- EL INPUT DE MAYÚSCULAS (ARREGLADO) --- */
+input {
     width: 100%;
     padding: 15px;
     border-radius: 12px;
     border: none;
+    outline: none;
     font-size: 1rem;
     margin-bottom: 12px;
-    outline: none;
-}
-
-input {
     background-color: #fff;
     color: #333;
     font-weight: bold;
     text-align: center;
+    /* Esto hace que lo que el usuario vea sea siempre mayúscula */
+    text-transform: uppercase !important; 
+}
+
+/* Aseguramos que el ID específico también lo tenga */
+#patenteInput {
+    text-transform: uppercase !important;
 }
 
 button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
     background-color: #d90429;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
-    text-transform: uppercase;
+    font-size: 1rem;
 }
 
-/* Botón de logueo - Discreto en el fondo */
+/* Botón de acceso admin fijo abajo */
 .admin-access {
-    position: relative; /* Lo sacamos de fixed para que no flote sobre el video si hay scroll */
-    margin-top: 20px;
-    text-align: center;
+    position: fixed;
+    bottom: 20px;
     width: 100%;
-    padding-bottom: 20px;
+    text-align: center;
+    z-index: 10;
 }
 
 .admin-access a {
@@ -112,13 +107,14 @@ button {
     font-size: 0.8rem;
 }
 
-/* Ajustes para pantallas pequeñas */
-@media (max-width: 400px) {
-    .container {
-        padding-top: 40px;
-        justify-content: flex-start;
-    }
+/* Ajustes Mobile */
+@media (max-width: 480px) {
     .logo {
-        width: 120px;
+        width: 130px;
+        margin-bottom: 20px;
+    }
+    .container {
+        justify-content: flex-start;
+        padding-top: 60px;
     }
 }

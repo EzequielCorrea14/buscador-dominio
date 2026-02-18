@@ -13,7 +13,7 @@
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video">
-    <source src="video.mp4.MOV" type="video/mp4">
+    <source src="video.mp4" type="video/mp4">
 </video>
 
     <main class="container">
@@ -24,12 +24,14 @@
         <div class="glass-box">
             <div class="input-group">
                 <input 
-                    type="text" 
-                    id="patenteInput" 
-                    placeholder="INGRESAR PATENTE" 
-                    maxlength="7"
-                    autocomplete="off"
-                >
+    type="text" 
+    id="patenteInput" 
+    placeholder="INGRESAR PATENTE" 
+    maxlength="7"
+    autocomplete="off"
+    autocorrect="off" 
+    autocapitalize="characters" 
+>
                 <button id="btnBuscar" onclick="validarYBuscar()">
                     <span id="btnText">BUSCAR</span>
                     <div id="spinner" class="spinner" style="display: none;"></div>
