@@ -10,7 +10,7 @@
 <body>
 
    <video autoplay muted loop playsinline id="bg-video" poster="imagen-de-fondo.jpg">
-        <source src="video.mp4.MOV" type="video/mp4">
+        <source src="video.mp4" type="video/mp4">
     </video>
 
     <main class="container">
@@ -24,16 +24,26 @@
                 </div>
 
                 <div class="info-block">
-                    <label>CHASIS</label>
-                    <div id="res-chasis" class="data-field">---</div>
+                    <label>MARCA</label>
+                    <div id="res-marca" class="data-field">---</div>
                 </div>
 
                 <div class="info-block">
-                    <label>FECHA</label>
+                    <label>MODELO</label>
+                    <div id="res-modelo" class="data-field">---</div>
+                </div>
+
+                <div class="info-block">
+                    <label>FECHA SERVICIO</label>
                     <div id="res-fecha" class="data-field">---</div>
                 </div>
 
-                <div class="info-block">
+                <div class="info-block full-width">
+                    <label>CHASIS / VIN</label>
+                    <div id="res-chasis" class="data-field">---</div>
+                </div>
+
+                <div class="info-block full-width">
                     <label>SERVICIO CONTRATADO</label>
                     <div id="res-servicio" class="data-field">---</div>
                 </div>
@@ -49,21 +59,22 @@
     </main>
 
     <script>
-        // Lógica para mostrar los datos cargados en el index.js
         document.addEventListener('DOMContentLoaded', () => {
             const data = JSON.parse(sessionStorage.getItem('vehiculoEncontrado'));
 
             if (!data) {
-                window.location.href = 'index.html'; // Redirigir si no hay datos
+                window.location.href = 'index.html';
                 return;
             }
 
-            // Inyectar datos en el HTML
-            document.getElementById('res-dominio').textContent = data.dominio;
-            document.getElementById('res-chasis').textContent = data.chasis;
-            document.getElementById('res-fecha').textContent = data.fecha;
-            document.getElementById('res-servicio').textContent = data.servicio;
-            document.getElementById('res-obs').textContent = data.observaciones;
+            // Inyectar datos (incluyendo los nuevos)
+            document.getElementById('res-dominio').textContent = data.dominio || "---";
+            document.getElementById('res-marca').textContent = data.marca || "---";
+            document.getElementById('res-modelo').textContent = data.modelo || "---";
+            document.getElementById('res-chasis').textContent = data.chasis || "---";
+            document.getElementById('res-fecha').textContent = data.fecha || "---";
+            document.getElementById('res-servicio').textContent = data.servicio || "---";
+            document.getElementById('res-obs').textContent = data.observaciones || "---";
         });
     </script>
 </body>
