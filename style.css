@@ -1,4 +1,4 @@
-/* Reset total */
+/* Reset básico */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,75 +6,78 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* Base de la pantalla: Quitamos el fondo para que se vea lo de atrás */
-html, body {
-    width: 100%;
-    height: 100%;
+/* Base de la pantalla - CORREGIDO PARA QUE SE VEA EL VIDEO */
+body, html {
     margin: 0;
     padding: 0;
-    background-color: #000; /* Respaldo inicial */
-    overflow: hidden; 
-}
-
-/* VIDEO DE FONDO - MÁXIMA PRIORIDAD VISUAL */
-video#bg-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1; 
-    object-fit: cover;
-    display: block !important;
-    /* Evita que cualquier filtro del body lo oculte */
-    background: #000; 
-}
-
-/* CONTENEDOR - Hacemos el fondo transparente */
-.container {
     width: 100%;
-    height: 100vh;
+    min-height: 100%;
+    /* Quitamos el color sólido que tapaba el fondo */
+    background-color: transparent; 
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Video de fondo - Volvemos a la configuración inicial que te funcionaba */
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: -1000; /* Volvemos al valor que tenías al principio */
+    object-fit: cover;
+    /* Eliminamos el background-color de aquí para evitar el cuadro negro */
+}
+
+/* Contenedor principal - Ajuste de escala suave */
+.container {
+    min-height: 100vh;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; 
+    flex-direction: column; /* Para que el logo esté arriba de la caja */
+    align-items: center; 
+    justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 1;
-    background: transparent !important; /* Forzamos transparencia */
+    z-index: 5;
 }
 
+/* Logo - Escala mejorada */
 header {
-    width: 100%;
-    display: flex;
-    justify-content: center;
     margin-bottom: 20px;
 }
 
 .logo {
-    width: 140px;
-    max-width: 45vw;
+    width: 150px;
+    max-width: 40vw;
     height: auto;
 }
 
+/* El cuadro negro transparente - Glassmorphism */
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.85);
-    padding: 25px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 30px 20px;
     border-radius: 20px;
     width: 100%;
-    max-width: 350px;
+    max-width: 380px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    text-align: center;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    text-align: center;
 }
 
+/* Inputs y botones */
 input, button {
     width: 100%;
-    padding: 14px;
+    padding: 15px;
     border-radius: 12px;
     border: none;
-    font-size: 16px;
+    font-size: 1rem;
     margin-bottom: 12px;
     outline: none;
 }
@@ -94,30 +97,28 @@ button {
     text-transform: uppercase;
 }
 
-/* BOTÓN LOGUEO - FIJO Y SIEMPRE VISIBLE */
+/* Botón de logueo - Discreto en el fondo */
 .admin-access {
-    position: fixed; 
-    bottom: 30px; 
-    left: 0;
-    width: 100%;
+    position: relative; /* Lo sacamos de fixed para que no flote sobre el video si hay scroll */
+    margin-top: 20px;
     text-align: center;
-    z-index: 10; 
+    width: 100%;
+    padding-bottom: 20px;
 }
 
 .admin-access a {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    display: inline-block;
-    padding: 10px;
+    font-size: 0.8rem;
 }
 
-/* AJUSTE PARA PANTALLAS MINI */
-@media (max-height: 600px) {
-    header { margin-bottom: 10px; }
-    .logo { width: 100px; }
-    .glass-box { padding: 15px; }
-    .admin-access { bottom: 15px; }
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 400px) {
+    .container {
+        padding-top: 40px;
+        justify-content: flex-start;
+    }
+    .logo {
+        width: 120px;
+    }
 }
