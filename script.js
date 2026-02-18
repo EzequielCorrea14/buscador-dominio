@@ -8,10 +8,7 @@ const firebaseConfig = {
     appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
 
-/**
- * INICIALIZACIÓN CORRECTA
- * He eliminado la línea que causaba el error ReferenceError
- */
+// Inicialización UNIFICADA
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -36,34 +33,44 @@ async function validarYBuscar() {
 
     // --- ACTIVAR CARGANDO ---
     btn.disabled = true;
-    btnText.innerText = "BUSCANDO";
-    spinner.style.display = "inline-block";
+    if(btnText) btnText.innerText = "BUSCANDO";
+    if(spinner) spinner.style.display = "inline-block";
+    errorMsg.style.display = 'none'; // Ocultar error previo si existe
 
     try {
         const docRef = db.collection("vehiculos").doc(patente);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
-            const datosVehiculo = docSnap.data();
-            datosVehiculo.dominio = patente; 
-            sessionStorage.setItem('vehiculoEncontrado', JSON.stringify(datosVehiculo));
+            const data = docSnap.data();
+            
+            // Creamos el objeto asegurando que marca y modelo existan para resultado.html
+            const vehiculoParaGuardar = {
+                dominio: patente,
+                marca: data.marca || "---",
+                modelo: data.modelo || "---",
+                chasis: data.chasis || "---",
+                fecha: data.fecha || "---",
+                servicio: data.servicio || "---",
+                observaciones: data.observaciones || "---"
+            };
+
+            sessionStorage.setItem('vehiculoEncontrado', JSON.stringify(vehiculoParaGuardar));
             window.location.href = "resultado.html";
         } else {
             errorMsg.style.display = 'block';
-            // Resetear botón si no hay resultados
             resetBtn();
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("Error de conexión.");
+        alert("Error de conexión con la base de datos.");
         resetBtn();
     }
 
-    // Función interna para volver el botón a su estado normal
     function resetBtn() {
         btn.disabled = false;
-        btnText.innerText = "BUSCAR";
-        spinner.style.display = "none";
+        if(btnText) btnText.innerText = "BUSCAR";
+        if(spinner) spinner.style.display = "none";
     }
 }
 
@@ -74,11 +81,12 @@ document.getElementById('patenteInput').addEventListener('keypress', function (e
     }
 });
 
+// Control de video y carga inicial
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('bg-video');
-    
-    // Intentar reproducir manualmente al cargar
-    video.play().catch(error => {
-        console.log("El navegador bloqueó el autoplay, esperando interacción.");
-    });
+    if (video) {
+        video.play().catch(error => {
+            console.log("Autoplay bloqueado, esperando interacción.");
+        });
+    }
 });

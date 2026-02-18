@@ -60,21 +60,30 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const data = JSON.parse(sessionStorage.getItem('vehiculoEncontrado'));
-
-            if (!data) {
+            const rawData = sessionStorage.getItem('vehiculoEncontrado');
+            
+            if (!rawData) {
                 window.location.href = 'index.html';
                 return;
             }
 
-            // Inyectar datos (incluyendo los nuevos)
-            document.getElementById('res-dominio').textContent = data.dominio || "---";
-            document.getElementById('res-marca').textContent = data.marca || "---";
-            document.getElementById('res-modelo').textContent = data.modelo || "---";
-            document.getElementById('res-chasis').textContent = data.chasis || "---";
-            document.getElementById('res-fecha').textContent = data.fecha || "---";
-            document.getElementById('res-servicio').textContent = data.servicio || "---";
-            document.getElementById('res-obs').textContent = data.observaciones || "---";
+            const data = JSON.parse(rawData);
+
+            // Inyección segura de datos
+            const fields = {
+                'res-dominio': data.dominio,
+                'res-marca': data.marca,
+                'res-modelo': data.modelo,
+                'res-chasis': data.chasis,
+                'res-fecha': data.fecha,
+                'res-servicio': data.servicio,
+                'res-obs': data.observaciones
+            };
+
+            for (const [id, value] of Object.entries(fields)) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value || "---";
+            }
         });
     </script>
 </body>

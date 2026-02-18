@@ -16,22 +16,31 @@
         <source src="video.mp4" type="video/mp4">
     </video>
 
-    <main class="container" style="overflow-y: auto; display: block; padding-top: 50px;">
+    <main class="container" style="overflow-y: auto; display: block; padding-top: 50px; padding-bottom: 50px;">
         <div class="glass-box" style="max-width: 500px; margin: auto;">
-            <h3 style="color:white; margin-bottom:15px;">CARGAR NUEVO DOMINIO</h3>
+            <h3 style="color:white; margin-bottom:15px; text-align: center;">GESTIÓN DE DOMINIOS</h3>
             
-            <input type="text" id="p_dominio" placeholder="DOMINIO (PATENTE)" maxlength="7">
-            
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <input type="text" id="p_dominio" placeholder="DOMINIO (PATENTE)" maxlength="7" style="margin-bottom: 0; flex: 2;">
+                <button onclick="buscarParaModificar()" style="background: #2196F3; flex: 1; padding: 0; font-size: 12px; height: 45px;">BUSCAR</button>
+            </div>
+
             <input type="text" id="p_marca" placeholder="MARCA (Ej: Toyota)">
-            <input type="text" id="p_modelo" placeholder="MODELO (Ej: Corolla)">
+            <input type="text" id="p_modelo" placeholder="MODELO (Ej: Hilux)">
             
             <input type="text" id="p_chasis" placeholder="N° CHASIS">
-            <input type="date" id="p_fecha">
-            <input type="text" id="p_servicio" placeholder="SERVICIO CONTRATADO">
-            <textarea id="p_obs" placeholder="OBSERVACIONES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px;"></textarea>
             
-            <button id="btnGuardar" onclick="guardarDato()">GUARDAR EN BASE DE DATOS</button>
-            <button onclick="logout()" style="background: gray; margin-top: 10px;">CERRAR SESIÓN</button>
+            <label style="color: white; font-size: 12px; margin-left: 5px; display: block; margin-bottom: 5px;">FECHA DE SERVICIO:</label>
+            <input type="date" id="p_fecha">
+            
+            <input type="text" id="p_servicio" placeholder="SERVICIO CONTRATADO">
+            <textarea id="p_obs" placeholder="OBSERVACIONES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px; min-height: 80px;"></textarea>
+            
+            <button id="btnGuardar" onclick="guardarDato()" style="background: #4CAF50; margin-bottom: 10px; width: 100%;">GUARDAR / ACTUALIZAR</button>
+            
+            <button onclick="borrarDato()" style="background: #f44336; margin-bottom: 20px; width: 100%;">ELIMINAR DOMINIO</button>
+            
+            <button onclick="logout()" style="background: gray; width: 100%;">CERRAR SESIÓN</button>
         </div>
     </main>
 
