@@ -6,42 +6,40 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Base de la pantalla - TOTALMENTE TRANSPARENTE */
+/* Base de la pantalla - BLOQUEAMOS EL SCROLL */
 body, html {
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
-    background-color: transparent !important; /* CLAVE: Si es negro, tapa el video */
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: 100%;
+    background-color: transparent !important;
+    overflow: hidden; /* Evita que el video grande cree scroll */
 }
 
-/* Video de fondo - Restaurado a tu versión inicial funcional */
+/* Video de fondo - ESCALA CLAVADA A LA PANTALLA */
 #bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     transform: translate(-50%, -50%);
-    z-index: -1000; /* Detrás de absolutamente todo */
+    z-index: -1000;
     object-fit: cover;
 }
 
-/* Contenedor principal */
+/* Contenedor principal - TRANSPARENCIA TOTAL */
 .container {
-    min-height: 100vh;
     width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center; 
     justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 5; /* Por encima del video */
+    z-index: 5;
+    background: transparent !important; /* Arregla el fondo negro en resultados */
 }
 
 /* Cuadro transparente */
@@ -58,7 +56,7 @@ body, html {
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- EL INPUT DE MAYÚSCULAS (ARREGLADO) --- */
+/* --- MAYÚSCULAS FORZADAS --- */
 input {
     width: 100%;
     padding: 15px;
@@ -71,11 +69,9 @@ input {
     color: #333;
     font-weight: bold;
     text-align: center;
-    /* Esto hace que lo que el usuario vea sea siempre mayúscula */
     text-transform: uppercase !important; 
 }
 
-/* Aseguramos que el ID específico también lo tenga */
 #patenteInput {
     text-transform: uppercase !important;
 }
@@ -92,7 +88,18 @@ button {
     font-size: 1rem;
 }
 
-/* Botón de acceso admin fijo abajo */
+/* --- ESTILO PARA RESULTADOS (Transparencia) --- */
+.data-field {
+    background: rgba(255, 255, 255, 0.1) !important; /* Cuadros de info semi-transparentes */
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #d90429;
+    text-align: left;
+}
+
+/* Botón admin fijo abajo */
 .admin-access {
     position: fixed;
     bottom: 20px;
