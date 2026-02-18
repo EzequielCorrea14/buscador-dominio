@@ -1,4 +1,4 @@
-/* 1. Reset y Base Sólida */
+/* Reset total */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,54 +6,55 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
+/* 1. FORZAR TRANSPARENCIA TOTAL (Esto quita el blanco y el negro) */
 html, body {
     width: 100%;
     height: 100%;
-    background-color: #000; /* Fondo negro de seguridad */
-    overflow: hidden; /* Prohibido el scroll */
+    background: transparent !important; /* Quita el blanco del index */
+    overflow: hidden; 
 }
 
-/* 2. VIDEO: Usamos la técnica que te funcionaba al inicio */
+/* 2. VIDEO: FIJO Y AL FONDO */
 #bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     transform: translate(-50%, -50%);
-    z-index: 0; /* Capa base */
+    z-index: -1; /* Un nivel atrás del contenido */
     object-fit: cover;
+    background-color: #000; /* Solo se verá si el video falla */
 }
 
-/* 3. CONTENEDOR: El "escenario" donde flota todo */
+/* 3. CONTENEDOR: DEBE SER TRANSPARENTE */
 .container {
-    position: relative;
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; 
     justify-content: center;
-    z-index: 10; /* Asegura estar por encima del video */
     padding: 20px;
+    position: relative;
+    z-index: 10;
+    background: transparent !important; /* Quita el fondo negro en resultados */
 }
 
-/* 4. LA CAJA (Glassmorphism) */
+/* 4. CAJA DE RESULTADOS Y BUSQUEDA */
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.75); /* Negro transparente */
+    background-color: rgba(0, 0, 0, 0.8) !important; /* Negro con transparencia */
     padding: 25px;
     border-radius: 20px;
     width: 100%;
-    max-width: 360px;
+    max-width: 380px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align: center;
 }
 
-/* 5. INPUTS Y MAYÚSCULAS (CORREGIDO) */
+/* 5. MAYÚSCULAS EN EL INPUT */
 input {
     width: 100%;
     padding: 15px;
@@ -65,7 +66,6 @@ input {
     color: #333;
     font-weight: bold;
     text-align: center;
-    /* Esto garantiza que el usuario vea mayúsculas al escribir */
     text-transform: uppercase !important; 
 }
 
@@ -74,24 +74,23 @@ button {
     padding: 15px;
     border-radius: 12px;
     border: none;
-    background-color: #d90429; /* Rojo */
+    background-color: #d90429;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;
 }
 
-/* 6. LOGO */
-.logo {
-    width: 140px;
-    height: auto;
-    margin-bottom: 20px;
+/* 6. RESULTADOS ESPECÍFICOS (Quitar fondos negros heredados) */
+#resultadoContenedor, .results-box, .info-block, .data-field {
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
-/* 7. ACCESO ADMIN (Abajo del todo) */
+/* Acceso Admin */
 .admin-access {
-    position: absolute;
-    bottom: 30px;
+    position: fixed;
+    bottom: 25px;
     width: 100%;
     text-align: center;
     z-index: 20;
@@ -103,8 +102,8 @@ button {
     font-size: 0.8rem;
 }
 
-/* 8. RESULTADOS (Para que se vean sobre el video) */
-#resultadoContenedor, .results-box, .data-field {
-    background: transparent !important;
-    color: white;
+/* Mobile */
+@media (max-width: 480px) {
+    .container { justify-content: flex-start; padding-top: 60px; }
+    .logo { width: 120px; margin-bottom: 20px; }
 }
