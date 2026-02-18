@@ -12,13 +12,12 @@ html, body {
     padding: 0;
     width: 100%;
     min-height: 100%;
-    /* Importante: fondo transparente para que se vea el video */
     background-color: transparent !important;
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-/* Video de fondo: z-index bajo y posición fija */
+/* Video de fondo */
 #bg-video {
     position: fixed;
     top: 50%;
@@ -28,27 +27,45 @@ html, body {
     width: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    z-index: -1; /* Capa inferior absoluta */
+    z-index: -1;
     object-fit: cover;
-    background-color: #000; /* Fondo de respaldo si falla el video */
+    background-color: #000;
 }
 
-/* Contenedor principal */
+/* HEADER Y LOGO: Ahora escalan con el ancho de pantalla */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    position: absolute;
+    top: 5%; /* Separación del tope */
+    z-index: 10;
+}
+
+.logo {
+    width: 180px; /* Tamaño máximo */
+    max-width: 40vw; /* En mobile no supera el 40% del ancho del celular */
+    height: auto;
+}
+
+/* Contenedor principal: Cambiado a Column para que el logo no se encime */
 .container {
     min-height: 100vh;
     width: 100%;
     display: flex;
+    flex-direction: column; /* Apila logo y caja verticalmente */
     align-items: center; 
     justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 1; /* Por encima del video */
+    z-index: 1;
 }
 
-/* Cuadro transparente (Glassmorphism) */
+/* El cuadro negro transparente */
 .glass-box {
     background-color: rgba(0, 0, 0, 0.85);
-    padding: 25px 20px;
+    padding: 30px 25px;
     border-radius: 20px;
     width: 100%;
     max-width: 380px; 
@@ -57,16 +74,18 @@ html, body {
     text-align: center;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    margin-top: 80px; /* Espacio para el logo */
 }
 
-/* Estilos de inputs y botones */
+/* Inputs y botones: Tamaño optimizado para dedos en mobile */
 input, button {
     width: 100%;
     padding: 15px;
     border-radius: 12px;
     border: none;
-    font-size: 1rem;
+    font-size: 1.1rem; /* Un poco más grande para legibilidad */
     margin-bottom: 12px;
+    outline: none;
 }
 
 input {
@@ -76,7 +95,7 @@ input {
     text-align: center;
 }
 
-#patenteInput, #p_dominio {
+#patenteInput {
     text-transform: uppercase !important;
 }
 
@@ -85,34 +104,37 @@ button {
     color: #fff;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.3s;
 }
 
-/* Resultados: Adaptabilidad Mobile */
+button:active {
+    background-color: #a8031f;
+}
+
+/* --- RESULTADOS --- */
 .results-box {
     text-align: left;
     max-width: 450px;
+    margin-top: 20px; /* Menos espacio en resultados */
 }
 
 .data-wrapper {
     display: flex;
-    flex-wrap: wrap; /* Permite que los elementos bajen en pantallas chicas */
+    flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 15px;
 }
 
 .info-block {
-    flex: 1 1 150px; /* Si hay espacio, dos columnas. Si no, una. */
+    flex: 1 1 140px;
     display: flex;
     flex-direction: column;
 }
 
-.full-width {
-    flex: 1 1 100%;
-}
+.full-width { flex: 1 1 100%; }
 
 label {
     color: #d90429;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: bold;
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -121,26 +143,40 @@ label {
 .data-field {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border-left: 3px solid #d90429;
-    word-break: break-word; /* Evita que el texto largo rompa el cuadro */
+    word-break: break-word;
 }
 
-/* Ajustes finales para celulares pequeños */
+/* --- MEDIA QUERIES PARA ESCALA PERFECTA --- */
+
 @media (max-width: 480px) {
-    .container {
-        padding: 15px;
-        align-items: flex-start; /* Evita recortes arriba si hay mucho texto */
-        padding-top: 50px;
+    header {
+        top: 2%; /* Sube un poco el logo en pantallas chicas */
     }
     
-    .glass-box {
-        padding: 20px 15px;
+    .logo {
+        width: 140px; /* Logo más chico en mobile */
     }
 
-    .info-block {
-        flex: 1 1 100%; /* Forzar una columna en celulares muy angostos */
+    .container {
+        justify-content: flex-start; /* Evita que el teclado tape el input */
+        padding-top: 100px;
     }
+
+    .glass-box {
+        padding: 20px 15px;
+        margin-top: 40px;
+    }
+
+    .info-block { flex: 1 1 100%; } /* Una columna en resultados */
+}
+
+/* Para celulares muy cortos o cuando sale el teclado */
+@media (max-height: 650px) {
+    .container { padding-top: 80px; }
+    .glass-box { margin-top: 20px; }
+    header { position: relative; top: 0; }
 }
