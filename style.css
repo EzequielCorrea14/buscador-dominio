@@ -6,92 +6,81 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* 1. BASE: El body DEBE tener el video como fondo real */
 html, body {
     width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #000; /* Fondo negro de seguridad */
+    /* El fondo negro es clave para que no parpadee en blanco */
+    background-color: #000 !important;
     overflow: hidden; 
 }
 
-/* 2. VIDEO: Posicionamiento absoluto detrás de todo */
+/* VIDEO DE FONDO - CORREGIDO */
 #bg-video {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
-    transform: translate(-50%, -50%);
-    z-index: 0; /* Capa base cero */
-    object-fit: cover;
-    display: block;
+    z-index: -1; /* Se mantiene al fondo */
+    object-fit: cover; /* Asegura que cubra toda la pantalla sin deformarse */
 }
 
-/* 3. CONTENEDOR: Flota sobre el video */
+/* CONTENEDOR - AJUSTADO */
 .container {
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center; 
-    justify-content: center;
+    align-items: center;
+    justify-content: center; 
     padding: 20px;
     position: relative;
-    z-index: 10; /* Superior al video */
-    background: transparent !important;
+    z-index: 1;
 }
 
-/* 4. CAJA (Glassmorphism) */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 140px;
+    max-width: 45vw;
+    height: auto;
+}
+
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.75) !important;
+    background-color: rgba(0, 0, 0, 0.85);
     padding: 25px;
     border-radius: 20px;
     width: 100%;
-    max-width: 380px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 350px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align: center;
-    color: white; /* Forzamos texto blanco dentro de la caja */
 }
 
-/* 5. INPUT Y MAYÚSCULAS */
-input {
+input, button {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     border-radius: 12px;
     border: none;
     font-size: 16px;
     margin-bottom: 12px;
+    outline: none;
+}
+
+input {
     background-color: #fff;
     color: #333;
     font-weight: bold;
     text-align: center;
-    text-transform: uppercase !important; 
-}
-
-/* 6. RESULTADOS: FORZAR VISIBILIDAD */
-#resultadoContenedor, .results-box, .data-field {
-    background: transparent !important;
-    color: white !important; /* Texto blanco para que se vea sobre el video */
-    margin-top: 10px;
-    font-size: 1.1rem;
-}
-
-/* Estilo para los textos que aparecen dinámicamente */
-#resultadoContenedor p, 
-#resultadoContenedor div {
-    color: white !important;
-    margin-bottom: 5px;
 }
 
 button {
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    border: none;
     background-color: #d90429;
     color: #fff;
     font-weight: bold;
@@ -99,23 +88,28 @@ button {
     text-transform: uppercase;
 }
 
-/* Acceso Admin */
+/* BOTÓN LOGUEO - CORREGIDO */
 .admin-access {
-    position: fixed;
-    bottom: 25px;
+    position: fixed; /* Lo fijamos a la pantalla, no al contenido */
+    bottom: 30px; /* Separado del borde inferior */
+    left: 0;
     width: 100%;
     text-align: center;
-    z-index: 20;
+    z-index: 10; /* Asegura que esté por encima del video */
 }
 
 .admin-access a {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6); /* Un gris claro elegante */
     text-decoration: none;
     font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
 }
 
-/* Mobile */
-@media (max-width: 480px) {
-    .container { justify-content: center; }
-    .logo { width: 130px; margin-bottom: 20px; }
+/* AJUSTE PARA PANTALLAS MINI */
+@media (max-height: 600px) {
+    header { margin-bottom: 10px; }
+    .logo { width: 100px; }
+    .glass-box { padding: 15px; }
+    .admin-access { bottom: 15px; }
 }
