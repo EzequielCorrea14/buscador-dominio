@@ -6,10 +6,16 @@
     <title>Detalle del Vehículo</title>
     <link rel="stylesheet" href="style.css">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Aseguramos que el fondo de esta página sea transparente para ver el video */
+        body, html {
+            background: transparent !important;
+        }
+    </style>
 </head>
 <body>
 
-   <video autoplay muted loop playsinline id="bg-video" poster="imagen-de-fondo.jpg">
+    <video autoplay muted loop playsinline id="bg-video" poster="imagen-de-fondo.jpg">
         <source src="video.mp4" type="video/mp4">
     </video>
 
@@ -60,6 +66,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. CARGA DE DATOS ---
             const rawData = sessionStorage.getItem('vehiculoEncontrado');
             
             if (!rawData) {
@@ -69,7 +76,6 @@
 
             const data = JSON.parse(rawData);
 
-            // Inyección segura de datos
             const fields = {
                 'res-dominio': data.dominio,
                 'res-marca': data.marca,
@@ -83,6 +89,19 @@
             for (const [id, value] of Object.entries(fields)) {
                 const el = document.getElementById(id);
                 if (el) el.textContent = value || "---";
+            }
+
+            // --- 2. REFUERZO DEL VIDEO ---
+            const video = document.getElementById('bg-video');
+            if (video) {
+                // Forzar reproducción
+                video.play().catch(error => {
+                    console.log("El navegador bloqueó el autoplay, intentando tras interacción.");
+                    // Si falla, arranca al primer toque del usuario en la pantalla
+                    document.body.addEventListener('click', () => {
+                        video.play();
+                    }, { once: true });
+                });
             }
         });
     </script>
