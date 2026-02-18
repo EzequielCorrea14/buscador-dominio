@@ -86,4 +86,11 @@ input {
 .admin-access a {
     color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
-    font-size:
+    font-size: 0.8rem;
+}
+
+/* Mobile: El logo ahora no empuja tanto hacia abajo */
+@media (max-width: 480px) {
+    .container { justify-content: center; padding-top: 0; }
+    .logo { width: 120px; margin-bottom: 15px; }
+}
