@@ -6,15 +6,17 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* 1. TRANSPARENCIA REAL */
+/* 1. BASE: El body DEBE tener el video como fondo real */
 html, body {
     width: 100%;
     height: 100%;
-    background: transparent !important; 
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* Fondo negro de seguridad */
     overflow: hidden; 
 }
 
-/* 2. VIDEO: Eliminamos el color negro de fondo que te lo tapa */
+/* 2. VIDEO: Posicionamiento absoluto detrás de todo */
 #bg-video {
     position: fixed;
     top: 50%;
@@ -22,12 +24,12 @@ html, body {
     width: 100vw;
     height: 100vh;
     transform: translate(-50%, -50%);
-    z-index: -1; 
+    z-index: 0; /* Capa base cero */
     object-fit: cover;
-    background: transparent !important; /* Cambiado: ya no es negro */
+    display: block;
 }
 
-/* 3. CONTENEDOR */
+/* 3. CONTENEDOR: Flota sobre el video */
 .container {
     width: 100%;
     height: 100vh;
@@ -37,21 +39,22 @@ html, body {
     justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 10;
-    background-color: transparent !important; /* Asegura transparencia total */
+    z-index: 10; /* Superior al video */
+    background: transparent !important;
 }
 
 /* 4. CAJA (Glassmorphism) */
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.7) !important; /* Un poco menos opaco para que se note el video */
+    background-color: rgba(0, 0, 0, 0.75) !important;
     padding: 25px;
     border-radius: 20px;
     width: 100%;
     max-width: 380px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align: center;
+    color: white; /* Forzamos texto blanco dentro de la caja */
 }
 
 /* 5. INPUT Y MAYÚSCULAS */
@@ -69,9 +72,31 @@ input {
     text-transform: uppercase !important; 
 }
 
-/* 6. RESULTADOS: Forzamos a que no hereden fondos oscuros */
-#resultadoContenedor, .results-box, .info-block, .data-field {
+/* 6. RESULTADOS: FORZAR VISIBILIDAD */
+#resultadoContenedor, .results-box, .data-field {
     background: transparent !important;
+    color: white !important; /* Texto blanco para que se vea sobre el video */
+    margin-top: 10px;
+    font-size: 1.1rem;
+}
+
+/* Estilo para los textos que aparecen dinámicamente */
+#resultadoContenedor p, 
+#resultadoContenedor div {
+    color: white !important;
+    margin-bottom: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background-color: #d90429;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
 }
 
 /* Acceso Admin */
@@ -84,13 +109,13 @@ input {
 }
 
 .admin-access a {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
-/* Mobile: El logo ahora no empuja tanto hacia abajo */
+/* Mobile */
 @media (max-width: 480px) {
-    .container { justify-content: center; padding-top: 0; }
-    .logo { width: 120px; margin-bottom: 15px; }
+    .container { justify-content: center; }
+    .logo { width: 130px; margin-bottom: 20px; }
 }
