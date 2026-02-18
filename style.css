@@ -6,19 +6,19 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Base de la pantalla - CORREGIDO */
-body, html {
+/* Base de la pantalla */
+html, body {
     margin: 0;
     padding: 0;
-    min-height: 100%;
     width: 100%;
-    /* Permitimos scroll vertical para cuando hay muchos datos */
-    overflow-x: hidden; 
+    min-height: 100%;
+    /* Importante: fondo transparente para que se vea el video */
+    background-color: transparent !important;
+    overflow-x: hidden;
     overflow-y: auto;
-    background-color: #000; /* Color de respaldo mientras carga el video */
 }
 
-/* Video de fondo */
+/* Video de fondo: z-index bajo y posición fija */
 #bg-video {
     position: fixed;
     top: 50%;
@@ -28,42 +28,43 @@ body, html {
     width: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    z-index: -1000;
+    z-index: -1; /* Capa inferior absoluta */
     object-fit: cover;
+    background-color: #000; /* Fondo de respaldo si falla el video */
 }
 
-/* Contenedor principal - MEJORADO PARA MOBILE */
+/* Contenedor principal */
 .container {
     min-height: 100vh;
     width: 100%;
     display: flex;
-    align-items: center; /* Centra verticalmente si sobra espacio */
+    align-items: center; 
     justify-content: center;
     padding: 20px;
     position: relative;
-    z-index: 5;
+    z-index: 1; /* Por encima del video */
 }
 
-/* El cuadro negro transparente - AJUSTADO */
+/* Cuadro transparente (Glassmorphism) */
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 30px 20px;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 25px 20px;
     border-radius: 20px;
     width: 100%;
-    max-width: 400px; /* Un poco más ancho para aprovechar espacio */
+    max-width: 380px; 
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     text-align: center;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-/* Inputs y botones */
+/* Estilos de inputs y botones */
 input, button {
     width: 100%;
     padding: 15px;
     border-radius: 12px;
     border: none;
-    outline: none;
     font-size: 1rem;
     margin-bottom: 12px;
 }
@@ -84,37 +85,34 @@ button {
     color: #fff;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s;
 }
 
-button:active { transform: scale(0.98); }
-
-/* --- SECCIÓN RESULTADOS RESPONSIVE --- */
+/* Resultados: Adaptabilidad Mobile */
 .results-box {
     text-align: left;
-    max-width: 500px; /* Más ancho en resultados para que entren 2 columnas */
+    max-width: 450px;
 }
 
 .data-wrapper {
     display: flex;
-    flex-wrap: wrap; /* Clave para que bajen en mobile */
-    gap: 10px;
-    margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite que los elementos bajen en pantallas chicas */
+    gap: 12px;
+    margin-bottom: 15px;
 }
 
 .info-block {
-    flex: 1 1 140px; /* Se estiran pero mínimo ocupan 140px */
+    flex: 1 1 150px; /* Si hay espacio, dos columnas. Si no, una. */
     display: flex;
     flex-direction: column;
 }
 
 .full-width {
-    flex: 1 1 100%; /* Estos ocupan toda la fila siempre */
+    flex: 1 1 100%;
 }
 
 label {
     color: #d90429;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: bold;
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -126,21 +124,23 @@ label {
     padding: 10px;
     border-radius: 8px;
     font-size: 0.9rem;
-    border-left: 4px solid #d90429;
-    word-break: break-all;
+    border-left: 3px solid #d90429;
+    word-break: break-word; /* Evita que el texto largo rompa el cuadro */
 }
 
-/* Media Query específica para pantallas muy pequeñas */
-@media (max-width: 400px) {
+/* Ajustes finales para celulares pequeños */
+@media (max-width: 480px) {
     .container {
-        padding: 10px;
-        align-items: flex-start; /* Evita que se corte arriba si es muy largo */
-        padding-top: 40px;
+        padding: 15px;
+        align-items: flex-start; /* Evita recortes arriba si hay mucho texto */
+        padding-top: 50px;
     }
+    
     .glass-box {
         padding: 20px 15px;
     }
+
     .info-block {
-        flex: 1 1 100%; /* En celulares mini, un dato por fila */
+        flex: 1 1 100%; /* Forzar una columna en celulares muy angostos */
     }
 }
