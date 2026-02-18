@@ -22,9 +22,10 @@ html, body {
     width: 100vw;
     height: 100vh;
     transform: translate(-50%, -50%);
-    z-index: 0;
+    z-index: 0; /* Capa base */
     object-fit: cover;
-    display: block;
+    display: block !important;
+    background: none !important; /* Evita que el 404 pinte un cuadro negro antes de tiempo */
 }
 
 /* 3. CONTENEDOR PRINCIPAL */
