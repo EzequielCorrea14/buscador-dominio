@@ -11,10 +11,9 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    min-height: 100%;
-    background-color: transparent !important;
+    min-height: 100vh;
+    background-color: #000; /* Fondo negro sólido de respaldo */
     overflow-x: hidden;
-    overflow-y: auto;
 }
 
 /* Video de fondo */
@@ -29,37 +28,33 @@ html, body {
     transform: translate(-50%, -50%);
     z-index: -1;
     object-fit: cover;
-    background-color: #000;
 }
 
-/* HEADER Y LOGO: Ahora escalan con el ancho de pantalla */
-header {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-    position: absolute;
-    top: 5%; /* Separación del tope */
-    z-index: 10;
-}
-
-.logo {
-    width: 180px; /* Tamaño máximo */
-    max-width: 40vw; /* En mobile no supera el 40% del ancho del celular */
-    height: auto;
-}
-
-/* Contenedor principal: Cambiado a Column para que el logo no se encime */
+/* Contenedor principal: La clave es flex-direction column */
 .container {
     min-height: 100vh;
     width: 100%;
     display: flex;
-    flex-direction: column; /* Apila logo y caja verticalmente */
+    flex-direction: column;
     align-items: center; 
-    justify-content: center;
+    justify-content: center; /* Centra todo el bloque (logo + caja) */
     padding: 20px;
     position: relative;
     z-index: 1;
+}
+
+/* HEADER Y LOGO: Ahora fluyen con el contenedor, no flotan */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px; /* Espacio fijo entre logo y caja */
+}
+
+.logo {
+    width: 160px; /* Tamaño base */
+    max-width: 45vw; /* Escala según el ancho del celular */
+    height: auto;
 }
 
 /* El cuadro negro transparente */
@@ -74,16 +69,15 @@ header {
     text-align: center;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    margin-top: 80px; /* Espacio para el logo */
 }
 
-/* Inputs y botones: Tamaño optimizado para dedos en mobile */
+/* Inputs y botones: Medidas relativas */
 input, button {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     border-radius: 12px;
     border: none;
-    font-size: 1.1rem; /* Un poco más grande para legibilidad */
+    font-size: 1rem;
     margin-bottom: 12px;
     outline: none;
 }
@@ -95,88 +89,47 @@ input {
     text-align: center;
 }
 
-#patenteInput {
-    text-transform: uppercase !important;
-}
-
 button {
     background-color: #d90429;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
-}
-
-button:active {
-    background-color: #a8031f;
-}
-
-/* --- RESULTADOS --- */
-.results-box {
-    text-align: left;
-    max-width: 450px;
-    margin-top: 20px; /* Menos espacio en resultados */
-}
-
-.data-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.info-block {
-    flex: 1 1 140px;
-    display: flex;
-    flex-direction: column;
-}
-
-.full-width { flex: 1 1 100%; }
-
-label {
-    color: #d90429;
-    font-size: 0.7rem;
-    font-weight: bold;
-    margin-bottom: 4px;
     text-transform: uppercase;
 }
 
-.data-field {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    border-left: 3px solid #d90429;
-    word-break: break-word;
-}
-
-/* --- MEDIA QUERIES PARA ESCALA PERFECTA --- */
-
+/* --- ADAPTACIÓN PARA MÓVILES (Escala real) --- */
 @media (max-width: 480px) {
-    header {
-        top: 2%; /* Sube un poco el logo en pantallas chicas */
+    .container {
+        justify-content: center; /* Mantiene el centro en mobile */
+        padding: 15px;
     }
     
-    .logo {
-        width: 140px; /* Logo más chico en mobile */
-    }
-
-    .container {
-        justify-content: flex-start; /* Evita que el teclado tape el input */
-        padding-top: 100px;
+    header {
+        margin-bottom: 20px; /* Menos espacio en pantallas chicas */
     }
 
     .glass-box {
-        padding: 20px 15px;
-        margin-top: 40px;
+        padding: 25px 20px;
     }
 
-    .info-block { flex: 1 1 100%; } /* Una columna en resultados */
+    /* Evita que el texto de los botones sea muy grande en celulares mini */
+    button, input {
+        font-size: 0.95rem;
+    }
 }
 
-/* Para celulares muy cortos o cuando sale el teclado */
-@media (max-height: 650px) {
-    .container { padding-top: 80px; }
-    .glass-box { margin-top: 20px; }
-    header { position: relative; top: 0; }
+/* Ajuste para cuando el teclado está abierto o pantallas muy cortas */
+@media (max-height: 600px) {
+    .container {
+        justify-content: flex-start;
+        padding-top: 20px;
+    }
 }
+
+/* --- SECCIÓN RESULTADOS --- */
+.results-box { text-align: left; }
+.data-wrapper { display: flex; flex-wrap: wrap; gap: 10px; }
+.info-block { flex: 1 1 140px; display: flex; flex-direction: column; }
+.full-width { flex: 1 1 100%; }
+label { color: #d90429; font-size: 0.65rem; font-weight: bold; margin-bottom: 3px; }
+.data-field { background: rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; border-left: 3px solid #d90429; }
