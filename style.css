@@ -1,4 +1,4 @@
-/* Reset total */
+/* 1. Reset y Base Sólida */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,55 +6,54 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* 1. TRANSPARENCIA REAL */
 html, body {
     width: 100%;
     height: 100%;
-    background: transparent !important; 
-    overflow: hidden; 
+    background-color: #000; /* Fondo negro de seguridad */
+    overflow: hidden; /* Prohibido el scroll */
 }
 
-/* 2. VIDEO: Eliminamos el color negro de fondo que te lo tapa */
+/* 2. VIDEO: Usamos la técnica que te funcionaba al inicio */
 #bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 100vw;
-    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
     transform: translate(-50%, -50%);
-    z-index: -1; 
+    z-index: 0; /* Capa base */
     object-fit: cover;
-    background: transparent !important; /* Cambiado: ya no es negro */
 }
 
-/* 3. CONTENEDOR */
+/* 3. CONTENEDOR: El "escenario" donde flota todo */
 .container {
+    position: relative;
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     justify-content: center;
+    z-index: 10; /* Asegura estar por encima del video */
     padding: 20px;
-    position: relative;
-    z-index: 10;
-    background-color: transparent !important; /* Asegura transparencia total */
 }
 
-/* 4. CAJA (Glassmorphism) */
+/* 4. LA CAJA (Glassmorphism) */
 .glass-box {
-    background-color: rgba(0, 0, 0, 0.7) !important; /* Un poco menos opaco para que se note el video */
+    background-color: rgba(0, 0, 0, 0.75); /* Negro transparente */
     padding: 25px;
     border-radius: 20px;
     width: 100%;
-    max-width: 380px;
+    max-width: 360px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align: center;
 }
 
-/* 5. INPUT Y MAYÚSCULAS */
+/* 5. INPUTS Y MAYÚSCULAS (CORREGIDO) */
 input {
     width: 100%;
     padding: 15px;
@@ -66,18 +65,33 @@ input {
     color: #333;
     font-weight: bold;
     text-align: center;
+    /* Esto garantiza que el usuario vea mayúsculas al escribir */
     text-transform: uppercase !important; 
 }
 
-/* 6. RESULTADOS: Forzamos a que no hereden fondos oscuros */
-#resultadoContenedor, .results-box, .info-block, .data-field {
-    background: transparent !important;
+button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background-color: #d90429; /* Rojo */
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
 }
 
-/* Acceso Admin */
+/* 6. LOGO */
+.logo {
+    width: 140px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* 7. ACCESO ADMIN (Abajo del todo) */
 .admin-access {
-    position: fixed;
-    bottom: 25px;
+    position: absolute;
+    bottom: 30px;
     width: 100%;
     text-align: center;
     z-index: 20;
@@ -89,8 +103,8 @@ input {
     font-size: 0.8rem;
 }
 
-/* Mobile: El logo ahora no empuja tanto hacia abajo */
-@media (max-width: 480px) {
-    .container { justify-content: center; padding-top: 0; }
-    .logo { width: 120px; margin-bottom: 15px; }
+/* 8. RESULTADOS (Para que se vean sobre el video) */
+#resultadoContenedor, .results-box, .data-field {
+    background: transparent !important;
+    color: white;
 }
