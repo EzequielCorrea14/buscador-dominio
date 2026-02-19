@@ -1,8 +1,6 @@
-// 1. IMPORTACIONES
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
-// 2. CONFIGURACIÓN
 const firebaseConfig = {
   apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
   authDomain: "app-patentes.firebaseapp.com",
@@ -12,30 +10,78 @@ const firebaseConfig = {
   appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
 
-// 3. INICIALIZACIÓN
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- CONEXIÓN CON MAKE (WEBHOOK) ---
-async function enviarAGoogleSheets(datos) {
-    const WEBHOOK_URL = "https://hook.us2.make.com/yout8thq1edp47ncqm1j35235c561f91"; 
-    try {
-        fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
-    } catch (e) {
-        console.warn("Error enviando a Make:", e);
+// --- CERRAR SESIÓN ---
+function logout() {
+    if (confirm("¿Desea salir del panel de administración?")) {
+        window.location.href = "index.html";
     }
 }
 
-// --- FUNCIÓN GUARDAR / ACTUALIZAR ---
+// --- BUSCAR Y CARGAR (Para ver y modificar) ---
+async function buscarParaModificar() {
+    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
+    if (!dominio) return alert("Ingresa un dominio");
+
+    try {
+        const docSnap = await getDoc(doc(db, "vehiculos", dominio));
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Cargar datos básicos
+            document.getElementById('p_marca').value = data.marca || "";
+            document.getElementById('p_modelo').value = data.modelo || "";
+            document.getElementById('p_chasis').value = data.chasis || "";
+            document.getElementById('p_nombre_cliente').value = data.nombreCliente || "";
+            document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
+            document.getElementById('p_obs').value = data.observaciones || "";
+
+            // CARGAR SERVICIOS EN EL PANEL
+            const contenedor = document.getElementById('contenedor-servicios');
+            contenedor.innerHTML = ""; // Limpiar antes de cargar
+
+            if (data.servicios && data.servicios.length > 0) {
+                data.servicios.forEach(srv => {
+                    const div = document.createElement('div');
+                    div.className = 'bloque-servicio';
+                    
+                    // Separar "6 meses" en [6, "meses"]
+                    const duracionPartes = srv.duracion.split(" ");
+                    const num = duracionPartes[0] || "1";
+                    const tipo = duracionPartes[1] || "meses";
+
+                    div.innerHTML = `
+                        <input type="text" class="srv-nombre" placeholder="Servicio" value="${srv.nombre}">
+                        <input type="date" class="srv-fecha" value="${srv.fecha}">
+                        <input type="number" class="srv-duracion-num" value="${num}">
+                        <select class="srv-duracion-tipo">
+                            <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
+                            <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
+                        </select>
+                        <label><input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}> Recordar</label>
+                        <button type="button" onclick="this.parentElement.remove()">X</button>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            }
+            alert("Vehículo y servicios cargados.");
+        } else {
+            alert("No se encontró el vehículo.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Error al buscar.");
+    }
+}
+
+// --- GUARDAR / ACTUALIZAR ---
 async function guardarDato() {
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     
-    // Captura de datos del formulario
+    // Capturar datos básicos
     const marca = document.getElementById('p_marca').value.trim();
     const modelo = document.getElementById('p_modelo').value.trim();
     const chasis = document.getElementById('p_chasis').value.trim();
@@ -43,9 +89,7 @@ async function guardarDato() {
     const telefonoCliente = document.getElementById('p_telefono_cliente').value.trim();
     const observaciones = document.getElementById('p_obs').value.trim();
 
-    if (dominio.length < 6) return alert("El dominio es demasiado corto.");
-
-    // Procesar bloques de servicios
+    // Capturar servicios del panel
     const bloques = document.querySelectorAll('.bloque-servicio');
     let serviciosArray = [];
 
@@ -78,113 +122,35 @@ async function guardarDato() {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
-        // Guardar en Firestore
         await setDoc(doc(db, "vehiculos", dominio), {
             marca, modelo, chasis, nombreCliente, telefonoCliente,
             observaciones, servicios: serviciosArray,
             ultimaActualizacion: serverTimestamp()
         });
 
-        // Enviar alertas a Make (sin bloquear el alert de éxito)
-        serviciosArray.forEach(srv => {
-            if (srv.recordar) {
-                enviarAGoogleSheets({
-                    dominio, nombreCliente, telefonoCliente,
-                    servicio: srv.nombre, vencimiento: srv.vencimiento
-                });
-            }
-        });
-
-        alert("¡Datos y servicios guardados con éxito!");
+        alert("¡Guardado correctamente!");
         location.reload();
     } catch (error) {
-        alert("Error al guardar: " + error.message);
+        alert("Error: " + error.message);
     } finally {
         btn.disabled = false;
         btn.innerText = "GUARDAR / ACTUALIZAR";
     }
 }
 
-// --- FUNCIÓN BUSCAR (Ahora carga servicios también) ---
-async function buscarParaModificar() {
-    const dominioInput = document.getElementById('p_dominio');
-    const dominio = dominioInput.value.trim().toUpperCase();
-    if (!dominio) return alert("Ingresa un dominio.");
-
-    try {
-        const docSnap = await getDoc(doc(db, "vehiculos", dominio));
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-
-            // Llenar campos principales
-            document.getElementById('p_marca').value = data.marca || "";
-            document.getElementById('p_modelo').value = data.modelo || "";
-            document.getElementById('p_chasis').value = data.chasis || "";
-            document.getElementById('p_nombre_cliente').value = data.nombreCliente || "";
-            document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
-            document.getElementById('p_obs').value = data.observaciones || "";
-
-            // Llenar Servicios
-            const contenedor = document.getElementById('contenedor-servicios');
-            if (contenedor) {
-                contenedor.innerHTML = ""; // Limpiar actuales
-                if (data.servicios && data.servicios.length > 0) {
-                    data.servicios.forEach(srv => agregarBloqueConDatos(srv));
-                }
-            }
-            alert("Vehículo y servicios cargados.");
-        } else {
-            alert("No se encontró el vehículo.");
-        }
-    } catch (e) {
-        alert("Error al buscar.");
-    }
-}
-
-// Función auxiliar para recrear los bloques de servicio al buscar
-function agregarBloqueConDatos(srv) {
-    const contenedor = document.getElementById('contenedor-servicios');
-    const div = document.createElement('div');
-    div.className = 'bloque-servicio';
-    
-    // Separar duración (ej: "6 meses" -> 6 y "meses")
-    const d = srv.duracion.split(' ');
-    const num = d[0] || 1;
-    const tipo = d[1] || "meses";
-
-    div.innerHTML = `
-        <input type="text" class="srv-nombre" placeholder="Nombre del servicio" value="${srv.nombre}">
-        <input type="date" class="srv-fecha" value="${srv.fecha}">
-        <div class="duracion-group">
-            <input type="number" class="srv-duracion-num" value="${num}" min="1">
-            <select class="srv-duracion-tipo">
-                <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
-                <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
-            </select>
-        </div>
-        <div class="recordar-group">
-            <input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}>
-            <label>Recordar</label>
-        </div>
-        <button type="button" class="btn-eliminar" onclick="this.parentElement.remove()">×</button>
-    `;
-    contenedor.appendChild(div);
-}
-
-// --- FUNCIÓN BORRAR ---
+// --- BORRAR ---
 async function borrarDato() {
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    if (!dominio) return alert("Ingresa un dominio.");
-    if (confirm(`¿Eliminar permanentemente ${dominio}?`)) {
-        try {
-            await deleteDoc(doc(db, "vehiculos", dominio));
-            alert("Eliminado.");
-            location.reload();
-        } catch (e) { alert("Error al borrar."); }
+    if (!dominio) return alert("Ingrese dominio");
+    if (confirm("¿Borrar definitivamente?")) {
+        await deleteDoc(doc(db, "vehiculos", dominio));
+        alert("Eliminado");
+        location.reload();
     }
 }
 
-// --- EXPOSICIÓN GLOBAL ---
+// --- EXPOSICIÓN AL HTML ---
 window.guardarDato = guardarDato;
 window.buscarParaModificar = buscarParaModificar;
 window.borrarDato = borrarDato;
+window.logout = logout;
