@@ -25,6 +25,7 @@ async function enviarAGoogleSheets(datos) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         });
+        console.log("Datos enviados a Make correctamente.");
     } catch (e) {
         console.warn("Error en Make:", e);
     }
@@ -32,6 +33,7 @@ async function enviarAGoogleSheets(datos) {
 
 // --- FUNCIÓN GUARDAR ---
 async function guardarDato() {
+    console.log("Iniciando guardado...");
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     const marca = document.getElementById('p_marca').value.trim();
@@ -78,24 +80,27 @@ async function guardarDato() {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
+        // Guardar en Firebase
         await setDoc(doc(db, "vehiculos", dominio), {
             marca, modelo, chasis, nombreCliente, telefonoCliente,
             observaciones, servicios: serviciosArray,
             ultimaActualizacion: serverTimestamp()
         });
 
-        for (const srv of serviciosArray) {
+        // Enviar a Make (sin esperar para no trabar el alert)
+        serviciosArray.forEach(srv => {
             if (srv.recordar) {
-                await enviarAGoogleSheets({
+                enviarAGoogleSheets({
                     dominio, nombreCliente, telefonoCliente,
                     servicio: srv.nombre, vencimiento: srv.vencimiento
                 });
             }
-        }
+        });
 
         alert("¡Datos guardados con éxito!");
         location.reload();
     } catch (error) {
+        console.error("Error al guardar:", error);
         alert("Error: " + error.message);
     } finally {
         btn.disabled = false;
@@ -105,8 +110,11 @@ async function guardarDato() {
 
 // --- FUNCIÓN BUSCAR ---
 async function buscarParaModificar() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    if (!dominio) return alert("Ingresa un dominio");
+    console.log("Buscando dominio...");
+    const dominioInput = document.getElementById('p_dominio');
+    const dominio = dominioInput.value.trim().toUpperCase();
+    
+    if (!dominio) return alert("Ingresa un dominio para buscar.");
 
     try {
         const docSnap = await getDoc(doc(db, "vehiculos", dominio));
@@ -118,32 +126,34 @@ async function buscarParaModificar() {
             document.getElementById('p_nombre_cliente').value = data.nombreCliente || "";
             document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
             document.getElementById('p_obs').value = data.observaciones || "";
-            alert("Vehículo encontrado. Puedes modificarlo.");
+            alert("Vehículo encontrado. Datos cargados.");
         } else {
-            alert("No se encontró el vehículo.");
+            alert("No se encontró ningún vehículo con ese dominio.");
         }
     } catch (e) {
-        alert("Error al buscar.");
+        console.error("Error al buscar:", e);
+        alert("Error al buscar el vehículo.");
     }
 }
 
 // --- FUNCIÓN BORRAR ---
 async function borrarDato() {
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    if (!dominio) return alert("Ingresa un dominio para borrar");
+    if (!dominio) return alert("Ingresa un dominio para borrar.");
 
-    if (confirm(`¿Seguro que quieres borrar el dominio ${dominio}?`)) {
+    if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el dominio ${dominio}?`)) {
         try {
             await deleteDoc(doc(db, "vehiculos", dominio));
-            alert("Borrado con éxito.");
+            alert("Vehículo eliminado correctamente.");
             location.reload();
         } catch (e) {
-            alert("Error al borrar.");
+            console.error("Error al borrar:", e);
+            alert("Error al intentar borrar.");
         }
     }
 }
 
-// --- HACER QUE LOS BOTONES FUNCIONEN (IMPORTANTE) ---
+// --- EXPORTACIÓN GLOBAL ---
 window.guardarDato = guardarDato;
 window.buscarParaModificar = buscarParaModificar;
 window.borrarDato = borrarDato;
