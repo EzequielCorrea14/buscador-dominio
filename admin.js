@@ -13,27 +13,45 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- CERRAR SESIÓN ---
-function logout() {
-    if (confirm("¿Desea salir del panel de administración?")) {
-        window.location.href = "index.html";
-    }
+// --- FUNCIÓN PARA AGREGAR CAMPOS VACÍOS (Botón Naranja) ---
+function agregarCampoServicio() {
+    const contenedor = document.getElementById('contenedor-servicios');
+    if (!contenedor) return;
+    const nuevoDiv = document.createElement('div');
+    nuevoDiv.className = 'bloque-servicio';
+    nuevoDiv.innerHTML = `
+        <input type="text" class="srv-nombre" placeholder="SERVICIO (Ej: Tratamiento)">
+        <label class="label-admin">FECHA:</label>
+        <input type="date" class="srv-fecha">
+        <label class="label-admin">DURACIÓN:</label>
+        <div class="row-flex">
+            <select class="srv-duracion-num">
+                ${Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+            </select>
+            <select class="srv-duracion-tipo">
+                <option value="meses">Meses</option>
+                <option value="años">Años</option>
+            </select>
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" class="srv-recordar">
+            <span>¿Desea un recordatorio?</span>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" style="background:transparent; color:red; border:none; cursor:pointer;">Eliminar X</button>
+    `;
+    contenedor.appendChild(nuevoDiv);
 }
 
-// --- BUSCAR Y CARGAR (Para ver y modificar) ---
+// --- BUSCAR Y CARGAR ---
 async function buscarParaModificar() {
-    const dominioInput = document.getElementById('p_dominio');
-    const dominio = dominioInput.value.trim().toUpperCase();
+    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     if (!dominio) return alert("Ingresa un dominio");
 
     try {
-        console.log("Buscando datos para:", dominio);
         const docSnap = await getDoc(doc(db, "vehiculos", dominio));
-        
         if (docSnap.exists()) {
             const data = docSnap.data();
             
-            // 1. Llenar campos básicos (con protección si el dato no existe)
             document.getElementById('p_marca').value = data.marca || "";
             document.getElementById('p_modelo').value = data.modelo || "";
             document.getElementById('p_chasis').value = data.chasis || "";
@@ -41,81 +59,70 @@ async function buscarParaModificar() {
             document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
             document.getElementById('p_obs').value = data.observaciones || "";
 
-            // 2. Llenar Servicios
             const contenedor = document.getElementById('contenedor-servicios');
             if (contenedor) {
-                contenedor.innerHTML = ""; // Limpiar antes de cargar
-                
-                if (data.servicios && Array.isArray(data.servicios)) {
+                contenedor.innerHTML = ""; 
+                if (data.servicios && data.servicios.length > 0) {
                     data.servicios.forEach(srv => {
-                        try {
-                            const div = document.createElement('div');
-                            div.className = 'bloque-servicio';
-                            
-                            // Separar duración con seguridad (evita el error si el formato es raro)
-                            const duracionTexto = srv.duracion || "1 meses";
-                            const duracionPartes = duracionTexto.split(" ");
-                            const num = duracionPartes[0] || "1";
-                            const tipo = duracionPartes[1] || "meses";
+                        const div = document.createElement('div');
+                        div.className = 'bloque-servicio';
+                        const d = srv.duracion.split(" ");
+                        const num = d[0] || "1";
+                        const tipo = d[1] || "meses";
 
-                            div.innerHTML = `
-                                <input type="text" class="srv-nombre" placeholder="Servicio" value="${srv.nombre || ''}">
-                                <input type="date" class="srv-fecha" value="${srv.fecha || ''}">
-                                <input type="number" class="srv-duracion-num" value="${num}">
+                        div.innerHTML = `
+                            <input type="text" class="srv-nombre" value="${srv.nombre || ''}">
+                            <label class="label-admin">FECHA:</label>
+                            <input type="date" class="srv-fecha" value="${srv.fecha || ''}">
+                            <div class="row-flex">
+                                <select class="srv-duracion-num">
+                                    ${Array.from({length: 12}, (_, i) => `<option value="${i+1}" ${i+1 == num ? 'selected' : ''}>${i+1}</option>`).join('')}
+                                </select>
                                 <select class="srv-duracion-tipo">
                                     <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
                                     <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
                                 </select>
-                                <label><input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}> Recordar</label>
-                                <button type="button" onclick="this.parentElement.remove()">X</button>
-                            `;
-                            contenedor.appendChild(div);
-                        } catch (errInner) {
-                            console.error("Error procesando un servicio individual:", errInner);
-                        }
+                            </div>
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}>
+                                <span>¿Desea un recordatorio?</span>
+                            </div>
+                            <button type="button" onclick="this.parentElement.remove()" style="background:transparent; color:red; border:none;">Eliminar X</button>
+                        `;
+                        contenedor.appendChild(div);
                     });
                 }
             }
-            alert("Vehículo y servicios cargados correctamente.");
+            alert("Datos cargados.");
         } else {
-            alert("No se encontró el vehículo.");
+            alert("No encontrado.");
         }
     } catch (e) {
-        console.error("Error detallado en búsqueda:", e);
-        alert("Error al buscar: revisa la consola (F12) para más detalles.");
+        alert("Error al buscar.");
     }
 }
 
-// --- GUARDAR / ACTUALIZAR ---
+// --- GUARDAR ---
 async function guardarDato() {
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     
-    // Capturar datos básicos
-    const marca = document.getElementById('p_marca').value.trim();
-    const modelo = document.getElementById('p_modelo').value.trim();
-    const chasis = document.getElementById('p_chasis').value.trim();
-    const nombreCliente = document.getElementById('p_nombre_cliente').value.trim();
-    const telefonoCliente = document.getElementById('p_telefono_cliente').value.trim();
-    const observaciones = document.getElementById('p_obs').value.trim();
-
-    // Capturar servicios del panel
     const bloques = document.querySelectorAll('.bloque-servicio');
     let serviciosArray = [];
 
     bloques.forEach(bloque => {
         const nombreSrv = bloque.querySelector('.srv-nombre').value.trim();
         const fechaSrv = bloque.querySelector('.srv-fecha').value;
-        const duracionNum = parseInt(bloque.querySelector('.srv-duracion-num').value);
+        const duracionNum = bloque.querySelector('.srv-duracion-num').value;
         const duracionTipo = bloque.querySelector('.srv-duracion-tipo').value;
         const recordar = bloque.querySelector('.srv-recordar').checked;
 
         if (nombreSrv && fechaSrv) {
             let fechaVencimiento = new Date(fechaSrv);
             if (duracionTipo === "meses") {
-                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + duracionNum);
+                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + parseInt(duracionNum));
             } else {
-                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + duracionNum);
+                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + parseInt(duracionNum));
             }
 
             serviciosArray.push({
@@ -131,36 +138,28 @@ async function guardarDato() {
     try {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
-
         await setDoc(doc(db, "vehiculos", dominio), {
-            marca, modelo, chasis, nombreCliente, telefonoCliente,
-            observaciones, servicios: serviciosArray,
+            marca: document.getElementById('p_marca').value,
+            modelo: document.getElementById('p_modelo').value,
+            chasis: document.getElementById('p_chasis').value,
+            nombreCliente: document.getElementById('p_nombre_cliente').value,
+            telefonoCliente: document.getElementById('p_telefono_cliente').value,
+            observaciones: document.getElementById('p_obs').value,
+            servicios: serviciosArray,
             ultimaActualizacion: serverTimestamp()
         });
-
-        alert("¡Guardado correctamente!");
+        alert("Guardado!");
         location.reload();
-    } catch (error) {
-        alert("Error: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "GUARDAR / ACTUALIZAR";
-    }
+    } catch (e) { alert("Error"); }
+    finally { btn.disabled = false; btn.innerText = "GUARDAR / ACTUALIZAR"; }
 }
 
-// --- BORRAR ---
-async function borrarDato() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    if (!dominio) return alert("Ingrese dominio");
-    if (confirm("¿Borrar definitivamente?")) {
-        await deleteDoc(doc(db, "vehiculos", dominio));
-        alert("Eliminado");
-        location.reload();
-    }
-}
-
-// --- EXPOSICIÓN AL HTML ---
-window.guardarDato = guardarDato;
+// --- EXPORTAR A WINDOW ---
 window.buscarParaModificar = buscarParaModificar;
-window.borrarDato = borrarDato;
-window.logout = logout;
+window.guardarDato = guardarDato;
+window.agregarCampoServicio = agregarCampoServicio;
+window.logout = () => { if(confirm("¿Salir?")) window.location.href="index.html"; };
+window.borrarDato = async () => {
+    const d = document.getElementById('p_dominio').value.toUpperCase();
+    if(d && confirm("¿Borrar?")) { await deleteDoc(doc(db, "vehiculos", d)); location.reload(); }
+};
