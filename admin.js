@@ -4,12 +4,12 @@ import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.
 
 // 2. CONFIGURACIÓN (Pon tus datos aquí)
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROYECTO_ID",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_ID",
-    appId: "TU_APP_ID"
+  apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
+  authDomain: "app-patentes.firebaseapp.com",
+  projectId: "app-patentes",
+  storageBucket: "app-patentes.firebasestorage.app",
+  messagingSenderId: "831225954806",
+  appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
 };
 
 // 3. INICIALIZACIÓN ÚNICA
