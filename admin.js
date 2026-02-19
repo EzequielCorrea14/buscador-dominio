@@ -1,7 +1,16 @@
+// 1. Importaciones (Asegúrate de que las versiones coincidan con tu HTML)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    // PEGA AQUÍ TUS CREDENCIALES (apiKey, authDomain, etc.)
+};
+
+// 2. Inicialización Global
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-
+// Función para guardar
 async function guardarDato() {
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
@@ -49,17 +58,19 @@ async function guardarDato() {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
-        // --- CORRECCIÓN AQUÍ: Uso de sintaxis modular de Firebase ---
-        // Si usas Firebase v9+ (el estándar actual), se usa setDoc y doc:
-        const { doc, setDoc, serverTimestamp } = window.FirebaseFirestore; 
-        
+        // 3. GUARDAR EN FIREBASE (Sintaxis corregida)
         await setDoc(doc(db, "vehiculos", dominio), {
-            marca, modelo, chasis, nombreCliente, telefonoCliente,
-            observaciones, servicios: serviciosArray,
+            marca, 
+            modelo, 
+            chasis, 
+            nombreCliente, 
+            telefonoCliente,
+            observaciones, 
+            servicios: serviciosArray,
             ultimaActualizacion: serverTimestamp()
         });
 
-        // 2. ENVIAR A GOOGLE SHEETS
+        // 4. ENVIAR A GOOGLE SHEETS (Make.com)
         for (const srv of serviciosArray) {
             if (srv.recordar) {
                 await enviarAGoogleSheets({
@@ -83,3 +94,5 @@ async function guardarDato() {
         btn.innerText = "GUARDAR / ACTUALIZAR";
     }
 }
+
+// Asegúrate de que la función enviarAGoogleSheets esté definida abajo también
