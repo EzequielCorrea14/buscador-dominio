@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css">
     
     <style>
         .bloque-servicio {
@@ -113,4 +113,12 @@
 
             <textarea id="p_obs" placeholder="OBSERVACIONES GENERALES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px; min-height: 80px;"></textarea>
             
-            <button id="btnGuardar" onclick="guardarDato()" style="background: #4CAF50; margin-
+            <button id="btnGuardar" onclick="guardarDato()" style="background: #4CAF50; margin-bottom: 10px; width: 100%;">GUARDAR / ACTUALIZAR</button>
+            <button onclick="borrarDato()" style="background: #f44336; margin-bottom: 20px; width: 100%;">ELIMINAR DOMINIO</button>
+            <button onclick="logout()" style="background: gray; width: 100%;">CERRAR SESIÓN</button>
+        </div>
+    </main>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
