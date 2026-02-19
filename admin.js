@@ -22,15 +22,18 @@ function logout() {
 
 // --- BUSCAR Y CARGAR (Para ver y modificar) ---
 async function buscarParaModificar() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
+    const dominioInput = document.getElementById('p_dominio');
+    const dominio = dominioInput.value.trim().toUpperCase();
     if (!dominio) return alert("Ingresa un dominio");
 
     try {
+        console.log("Buscando datos para:", dominio);
         const docSnap = await getDoc(doc(db, "vehiculos", dominio));
+        
         if (docSnap.exists()) {
             const data = docSnap.data();
             
-            // Cargar datos básicos
+            // 1. Llenar campos básicos (con protección si el dato no existe)
             document.getElementById('p_marca').value = data.marca || "";
             document.getElementById('p_modelo').value = data.modelo || "";
             document.getElementById('p_chasis').value = data.chasis || "";
@@ -38,41 +41,48 @@ async function buscarParaModificar() {
             document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
             document.getElementById('p_obs').value = data.observaciones || "";
 
-            // CARGAR SERVICIOS EN EL PANEL
+            // 2. Llenar Servicios
             const contenedor = document.getElementById('contenedor-servicios');
-            contenedor.innerHTML = ""; // Limpiar antes de cargar
+            if (contenedor) {
+                contenedor.innerHTML = ""; // Limpiar antes de cargar
+                
+                if (data.servicios && Array.isArray(data.servicios)) {
+                    data.servicios.forEach(srv => {
+                        try {
+                            const div = document.createElement('div');
+                            div.className = 'bloque-servicio';
+                            
+                            // Separar duración con seguridad (evita el error si el formato es raro)
+                            const duracionTexto = srv.duracion || "1 meses";
+                            const duracionPartes = duracionTexto.split(" ");
+                            const num = duracionPartes[0] || "1";
+                            const tipo = duracionPartes[1] || "meses";
 
-            if (data.servicios && data.servicios.length > 0) {
-                data.servicios.forEach(srv => {
-                    const div = document.createElement('div');
-                    div.className = 'bloque-servicio';
-                    
-                    // Separar "6 meses" en [6, "meses"]
-                    const duracionPartes = srv.duracion.split(" ");
-                    const num = duracionPartes[0] || "1";
-                    const tipo = duracionPartes[1] || "meses";
-
-                    div.innerHTML = `
-                        <input type="text" class="srv-nombre" placeholder="Servicio" value="${srv.nombre}">
-                        <input type="date" class="srv-fecha" value="${srv.fecha}">
-                        <input type="number" class="srv-duracion-num" value="${num}">
-                        <select class="srv-duracion-tipo">
-                            <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
-                            <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
-                        </select>
-                        <label><input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}> Recordar</label>
-                        <button type="button" onclick="this.parentElement.remove()">X</button>
-                    `;
-                    contenedor.appendChild(div);
-                });
+                            div.innerHTML = `
+                                <input type="text" class="srv-nombre" placeholder="Servicio" value="${srv.nombre || ''}">
+                                <input type="date" class="srv-fecha" value="${srv.fecha || ''}">
+                                <input type="number" class="srv-duracion-num" value="${num}">
+                                <select class="srv-duracion-tipo">
+                                    <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
+                                    <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
+                                </select>
+                                <label><input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}> Recordar</label>
+                                <button type="button" onclick="this.parentElement.remove()">X</button>
+                            `;
+                            contenedor.appendChild(div);
+                        } catch (errInner) {
+                            console.error("Error procesando un servicio individual:", errInner);
+                        }
+                    });
+                }
             }
-            alert("Vehículo y servicios cargados.");
+            alert("Vehículo y servicios cargados correctamente.");
         } else {
             alert("No se encontró el vehículo.");
         }
     } catch (e) {
-        console.error(e);
-        alert("Error al buscar.");
+        console.error("Error detallado en búsqueda:", e);
+        alert("Error al buscar: revisa la consola (F12) para más detalles.");
     }
 }
 
