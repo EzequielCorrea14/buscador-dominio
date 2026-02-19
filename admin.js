@@ -16,26 +16,26 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- CONEXIÓN CON MAKE ---
+// --- CONEXIÓN CON MAKE (WEBHOOK) ---
 async function enviarAGoogleSheets(datos) {
     const WEBHOOK_URL = "https://hook.us2.make.com/yout8thq1edp47ncqm1j35235c561f91"; 
     try {
-        await fetch(WEBHOOK_URL, {
+        fetch(WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         });
-        console.log("Datos enviados a Make correctamente.");
     } catch (e) {
-        console.warn("Error en Make:", e);
+        console.warn("Error enviando a Make:", e);
     }
 }
 
-// --- FUNCIÓN GUARDAR ---
+// --- FUNCIÓN GUARDAR / ACTUALIZAR ---
 async function guardarDato() {
-    console.log("Iniciando guardado...");
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
+    
+    // Captura de datos del formulario
     const marca = document.getElementById('p_marca').value.trim();
     const modelo = document.getElementById('p_modelo').value.trim();
     const chasis = document.getElementById('p_chasis').value.trim();
@@ -43,11 +43,9 @@ async function guardarDato() {
     const telefonoCliente = document.getElementById('p_telefono_cliente').value.trim();
     const observaciones = document.getElementById('p_obs').value.trim();
 
-    if (dominio.length < 6) {
-        alert("El dominio debe tener al menos 6 caracteres.");
-        return;
-    }
+    if (dominio.length < 6) return alert("El dominio es demasiado corto.");
 
+    // Procesar bloques de servicios
     const bloques = document.querySelectorAll('.bloque-servicio');
     let serviciosArray = [];
 
@@ -80,14 +78,14 @@ async function guardarDato() {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
-        // Guardar en Firebase
+        // Guardar en Firestore
         await setDoc(doc(db, "vehiculos", dominio), {
             marca, modelo, chasis, nombreCliente, telefonoCliente,
             observaciones, servicios: serviciosArray,
             ultimaActualizacion: serverTimestamp()
         });
 
-        // Enviar a Make (sin esperar para no trabar el alert)
+        // Enviar alertas a Make (sin bloquear el alert de éxito)
         serviciosArray.forEach(srv => {
             if (srv.recordar) {
                 enviarAGoogleSheets({
@@ -97,63 +95,96 @@ async function guardarDato() {
             }
         });
 
-        alert("¡Datos guardados con éxito!");
+        alert("¡Datos y servicios guardados con éxito!");
         location.reload();
     } catch (error) {
-        console.error("Error al guardar:", error);
-        alert("Error: " + error.message);
+        alert("Error al guardar: " + error.message);
     } finally {
         btn.disabled = false;
         btn.innerText = "GUARDAR / ACTUALIZAR";
     }
 }
 
-// --- FUNCIÓN BUSCAR ---
+// --- FUNCIÓN BUSCAR (Ahora carga servicios también) ---
 async function buscarParaModificar() {
-    console.log("Buscando dominio...");
     const dominioInput = document.getElementById('p_dominio');
     const dominio = dominioInput.value.trim().toUpperCase();
-    
-    if (!dominio) return alert("Ingresa un dominio para buscar.");
+    if (!dominio) return alert("Ingresa un dominio.");
 
     try {
         const docSnap = await getDoc(doc(db, "vehiculos", dominio));
         if (docSnap.exists()) {
             const data = docSnap.data();
+
+            // Llenar campos principales
             document.getElementById('p_marca').value = data.marca || "";
             document.getElementById('p_modelo').value = data.modelo || "";
             document.getElementById('p_chasis').value = data.chasis || "";
             document.getElementById('p_nombre_cliente').value = data.nombreCliente || "";
             document.getElementById('p_telefono_cliente').value = data.telefonoCliente || "";
             document.getElementById('p_obs').value = data.observaciones || "";
-            alert("Vehículo encontrado. Datos cargados.");
+
+            // Llenar Servicios
+            const contenedor = document.getElementById('contenedor-servicios');
+            if (contenedor) {
+                contenedor.innerHTML = ""; // Limpiar actuales
+                if (data.servicios && data.servicios.length > 0) {
+                    data.servicios.forEach(srv => agregarBloqueConDatos(srv));
+                }
+            }
+            alert("Vehículo y servicios cargados.");
         } else {
-            alert("No se encontró ningún vehículo con ese dominio.");
+            alert("No se encontró el vehículo.");
         }
     } catch (e) {
-        console.error("Error al buscar:", e);
-        alert("Error al buscar el vehículo.");
+        alert("Error al buscar.");
     }
+}
+
+// Función auxiliar para recrear los bloques de servicio al buscar
+function agregarBloqueConDatos(srv) {
+    const contenedor = document.getElementById('contenedor-servicios');
+    const div = document.createElement('div');
+    div.className = 'bloque-servicio';
+    
+    // Separar duración (ej: "6 meses" -> 6 y "meses")
+    const d = srv.duracion.split(' ');
+    const num = d[0] || 1;
+    const tipo = d[1] || "meses";
+
+    div.innerHTML = `
+        <input type="text" class="srv-nombre" placeholder="Nombre del servicio" value="${srv.nombre}">
+        <input type="date" class="srv-fecha" value="${srv.fecha}">
+        <div class="duracion-group">
+            <input type="number" class="srv-duracion-num" value="${num}" min="1">
+            <select class="srv-duracion-tipo">
+                <option value="meses" ${tipo === 'meses' ? 'selected' : ''}>Meses</option>
+                <option value="años" ${tipo === 'años' ? 'selected' : ''}>Años</option>
+            </select>
+        </div>
+        <div class="recordar-group">
+            <input type="checkbox" class="srv-recordar" ${srv.recordar ? 'checked' : ''}>
+            <label>Recordar</label>
+        </div>
+        <button type="button" class="btn-eliminar" onclick="this.parentElement.remove()">×</button>
+    `;
+    contenedor.appendChild(div);
 }
 
 // --- FUNCIÓN BORRAR ---
 async function borrarDato() {
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    if (!dominio) return alert("Ingresa un dominio para borrar.");
-
-    if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el dominio ${dominio}?`)) {
+    if (!dominio) return alert("Ingresa un dominio.");
+    if (confirm(`¿Eliminar permanentemente ${dominio}?`)) {
         try {
             await deleteDoc(doc(db, "vehiculos", dominio));
-            alert("Vehículo eliminado correctamente.");
+            alert("Eliminado.");
             location.reload();
-        } catch (e) {
-            console.error("Error al borrar:", e);
-            alert("Error al intentar borrar.");
-        }
+        } catch (e) { alert("Error al borrar."); }
     }
 }
 
-// --- EXPORTACIÓN GLOBAL ---
+// --- EXPOSICIÓN GLOBAL ---
 window.guardarDato = guardarDato;
 window.buscarParaModificar = buscarParaModificar;
 window.borrarDato = borrarDato;
