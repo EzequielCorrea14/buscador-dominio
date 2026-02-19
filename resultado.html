@@ -5,27 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Detalle del Vehículo</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* ELIMINAR FONDO BLANCO Y CORREGIR MOBILE */
         html, body {
-            background-color: #000 !important; /* Fondo negro base */
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            background-color: #000 !important;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             overflow-x: hidden;
             overflow-y: auto;
         }
 
         #bg-video {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
             transform: translate(-50%, -50%);
             z-index: -1; 
             object-fit: cover;
@@ -34,23 +27,54 @@
         .container {
             background: transparent !important;
             min-height: 100vh;
-            padding-top: 40px; /* Espacio para que no pegue arriba en mobile */
+            padding: 40px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Ajuste de transparencia de la caja */
         .glass-box {
             background-color: rgba(0, 0, 0, 0.85) !important;
             backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Estilo para las tarjetas de servicios */
+        .servicio-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #d90429;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .servicio-card h4 {
+            color: #fff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+        }
+
+        .servicio-card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin: 2px 0;
+        }
+
+        .vencimiento-tag {
+            color: #ff4d4d !important;
+            font-weight: bold;
+            margin-top: 5px;
+            display: block;
         }
     </style>
 </head>
 <body>
 
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="video.mp4.MOV" type="video/mp4">
+        <source src="video.mp4" type="video/mp4">
     </video>
 
     <main class="container">
@@ -73,34 +97,29 @@
                     <div id="res-modelo" class="data-field">---</div>
                 </div>
 
-                <div class="info-block">
-                    <label>FECHA SERVICIO</label>
-                    <div id="res-fecha" class="data-field">---</div>
-                </div>
-
                 <div class="info-block full-width">
                     <label>CHASIS / VIN</label>
                     <div id="res-chasis" class="data-field">---</div>
                 </div>
 
                 <div class="info-block full-width">
-                    <label>SERVICIO CONTRATADO</label>
-                    <div id="res-servicio" class="data-field">---</div>
+                    <label>HISTORIAL DE SERVICIOS</label>
+                    <div id="lista-servicios-cliente">
+                        </div>
                 </div>
 
                 <div class="info-block full-width">
-                    <label>OBSERVACIONES</label>
+                    <label>OBSERVACIONES GENERALES</label>
                     <div id="res-obs" class="data-field long-text">---</div>
                 </div>
             </div>
 
-            <button onclick="window.location.href='index.html'" class="btn-volver">VOLVER</button>
+            <button onclick="window.location.href='index.html'" class="btn-volver" style="margin-top: 20px;">VOLVER</button>
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. CARGA DE DATOS
             const rawData = sessionStorage.getItem('vehiculoEncontrado');
             if (!rawData) {
                 window.location.href = 'index.html';
@@ -108,30 +127,39 @@
             }
 
             const data = JSON.parse(rawData);
-            const fields = {
-                'res-dominio': data.dominio,
-                'res-marca': data.marca,
-                'res-modelo': data.modelo,
-                'res-chasis': data.chasis,
-                'res-fecha': data.fecha,
-                'res-servicio': data.servicio,
-                'res-obs': data.observaciones
-            };
+            
+            // Llenar datos básicos
+            document.getElementById('res-dominio').textContent = data.dominio || "---";
+            document.getElementById('res-marca').textContent = data.marca || "---";
+            document.getElementById('res-modelo').textContent = data.modelo || "---";
+            document.getElementById('res-chasis').textContent = data.chasis || "---";
+            document.getElementById('res-obs').textContent = data.observaciones || "---";
 
-            for (const [id, value] of Object.entries(fields)) {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value || "---";
+            // Llenar lista de servicios
+            const contenedorServicios = document.getElementById('lista-servicios-cliente');
+            contenedorServicios.innerHTML = ''; // Limpiar
+
+            if (data.servicios && data.servicios.length > 0) {
+                data.servicios.forEach(srv => {
+                    const card = document.createElement('div');
+                    card.className = 'servicio-card';
+                    card.innerHTML = `
+                        <h4>${srv.nombre}</h4>
+                        <p><strong>Realizado:</strong> ${srv.fecha}</p>
+                        <p><strong>Duración:</strong> ${srv.duracion}</p>
+                        <span class="vencimiento-tag">VENCE EL: ${srv.vencimiento}</span>
+                    `;
+                    contenedorServicios.appendChild(card);
+                });
+            } else {
+                contenedorServicios.innerHTML = '<div class="data-field">Sin servicios registrados</div>';
             }
 
-            // 2. DESPERTAR VIDEO (FORZADO)
+            // Despertar video
             const video = document.getElementById('bg-video');
             if (video) {
-                video.muted = true;
                 video.play().catch(() => {
-                    // Si el navegador bloquea, arranca al primer toque
-                    document.body.addEventListener('click', () => {
-                        video.play();
-                    }, { once: true });
+                    document.body.addEventListener('click', () => video.play(), { once: true });
                 });
             }
         });

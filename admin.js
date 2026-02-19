@@ -1,39 +1,13 @@
-// 1. Configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBo8q4_fFxiFp9jfkRDL5Fbg1KURLutIfg",
-    authDomain: "app-patentes.firebaseapp.com",
-    projectId: "app-patentes",
-    storageBucket: "app-patentes.firebasestorage.app",
-    messagingSenderId: "831225954806",
-    appId: "1:831225954806:web:175d36ddb3c1b8305f87d7"
-};
+// ... (Toda tu configuración de Firebase inicial se mantiene igual)
 
-// 2. Inicialización UNIFICADA
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-// 3. Verificar si el admin está logueado
-auth.onAuthStateChanged(user => {
-    if (!user) {
-        if (!window.location.pathname.includes("login.html")) {
-            window.location.href = "login.html";
-        }
-    }
-});
-
-// 4. Función para Guardar o Actualizar Datos
 async function guardarDato() {
     const btn = document.getElementById('btnGuardar');
-    
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     const marca = document.getElementById('p_marca').value.trim();
     const modelo = document.getElementById('p_modelo').value.trim();
     const chasis = document.getElementById('p_chasis').value.trim();
-    const fecha = document.getElementById('p_fecha').value;
-    const servicio = document.getElementById('p_servicio').value.trim();
+    const nombreCliente = document.getElementById('p_nombre_cliente').value.trim();
+    const telefonoCliente = document.getElementById('p_telefono_cliente').value.trim();
     const observaciones = document.getElementById('p_obs').value.trim();
 
     if (dominio.length < 6) {
@@ -41,103 +15,85 @@ async function guardarDato() {
         return;
     }
 
+    const bloques = document.querySelectorAll('.bloque-servicio');
+    let serviciosArray = [];
+
+    bloques.forEach(bloque => {
+        const nombreSrv = bloque.querySelector('.srv-nombre').value.trim();
+        const fechaSrv = bloque.querySelector('.srv-fecha').value;
+        const duracionNum = parseInt(bloque.querySelector('.srv-duracion-num').value);
+        const duracionTipo = bloque.querySelector('.srv-duracion-tipo').value;
+        const recordar = bloque.querySelector('.srv-recordar').checked;
+
+        if (nombreSrv && fechaSrv) {
+            let fechaVencimiento = new Date(fechaSrv);
+            if (duracionTipo === "meses") {
+                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + duracionNum);
+            } else {
+                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + duracionNum);
+            }
+
+            serviciosArray.push({
+                nombre: nombreSrv,
+                fecha: fechaSrv,
+                duracion: `${duracionNum} ${duracionTipo}`,
+                vencimiento: fechaVencimiento.toISOString().split('T')[0],
+                recordar: recordar
+            });
+        }
+    });
+
     try {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
+        // 1. Guardar en Firebase (Para la consulta del cliente)
         await db.collection("vehiculos").doc(dominio).set({
-            marca: marca,
-            modelo: modelo,
-            chasis: chasis,
-            fecha: fecha,
-            servicio: servicio,
-            observaciones: observaciones,
+            marca, modelo, chasis, nombreCliente, telefonoCliente,
+            observaciones, servicios: serviciosArray,
             ultimaActualizacion: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        alert("¡Vehículo guardado/actualizado con éxito!");
-        limpiarFormulario();
+        // 2. ENVIAR A GOOGLE SHEETS (Para tus recordatorios)
+        // Solo enviamos si hay servicios con "Recordar" activado
+        for (const srv of serviciosArray) {
+            if (srv.recordar) {
+                await enviarAGoogleSheets({
+                    dominio,
+                    nombreCliente,
+                    telefonoCliente,
+                    servicio: srv.nombre,
+                    vencimiento: srv.vencimiento
+                });
+            }
+        }
+
+        alert("¡Datos guardados y sincronizados con éxito!");
+        location.reload();
         
     } catch (error) {
-        console.error("Error al guardar:", error);
-        alert("Error al guardar: " + error.message);
+        console.error("Error:", error);
+        alert("Error: " + error.message);
     } finally {
         btn.disabled = false;
-        btn.innerText = "GUARDAR EN BASE DE DATOS";
+        btn.innerText = "GUARDAR / ACTUALIZAR";
     }
 }
 
-// 5. NUEVA FUNCIÓN: Buscar para Editar
-async function buscarParaModificar() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
+// NUEVA FUNCIÓN: Conexión con Make.com
+async function enviarAGoogleSheets(datos) {
+    // REEMPLAZA ESTE LINK con el que te dará Make en el siguiente paso
+    const WEBHOOK_URL = "https://hook.us2.make.com/yout8thq1edp47ncqm1j35235c561f91"; 
     
-    if (!dominio) {
-        alert("Ingresa un dominio para buscar.");
-        return;
-    }
-
     try {
-        const doc = await db.collection("vehiculos").doc(dominio).get();
-        if (doc.exists) {
-            const data = doc.data();
-            // Rellenamos los campos con la info de la base de datos
-            document.getElementById('p_marca').value = data.marca || "";
-            document.getElementById('p_modelo').value = data.modelo || "";
-            document.getElementById('p_chasis').value = data.chasis || "";
-            document.getElementById('p_fecha').value = data.fecha || "";
-            document.getElementById('p_servicio').value = data.servicio || "";
-            document.getElementById('p_obs').value = data.observaciones || "";
-            alert("Datos cargados. Modifica lo que necesites y presiona GUARDAR.");
-        } else {
-            alert("No se encontró ningún vehículo con esa patente.");
-        }
-    } catch (error) {
-        console.error("Error al buscar:", error);
-        alert("Error al buscar datos.");
-    }
-}
-
-// 6. NUEVA FUNCIÓN: Borrar Dato
-async function borrarDato() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
-    
-    if (!dominio) {
-        alert("Ingresa el dominio del vehículo que deseas borrar.");
-        return;
-    }
-
-    const confirmar = confirm(`¿Estás seguro de que deseas eliminar permanentemente el vehículo ${dominio}?`);
-    
-    if (confirmar) {
-        try {
-            await db.collection("vehiculos").doc(dominio).delete();
-            alert("Vehículo eliminado correctamente.");
-            limpiarFormulario();
-        } catch (error) {
-            console.error("Error al borrar:", error);
-            alert("Error al intentar eliminar.");
-        }
-    }
-}
-
-// 7. Función para Limpiar el Formulario
-function limpiarFormulario() {
-    document.querySelectorAll('input, textarea').forEach(el => el.value = "");
-}
-
-// 8. Función de Logout
-function logout() {
-    auth.signOut().then(() => {
-        window.location.href = "login.html";
-    });
-}
-
-// 9. Control de Video para móviles
-document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('bg-video');
-    if (video) {
-        video.play().catch(error => {
-            console.log("Autoplay bloqueado.");
+        await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
         });
+    } catch (e) {
+        console.warn("No se pudo enviar a la planilla, pero se guardó en Firebase.");
     }
-});
+}
+
+// ... (Resto de tus funciones buscarParaModificar, borrarDato, etc. se mantienen igual)

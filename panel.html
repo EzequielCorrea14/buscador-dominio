@@ -3,12 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cargar Datos</title>
+    <title>Cargar Datos - Admin</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Estilos específicos para los bloques de servicios dinámicos */
+        .bloque-servicio {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        .row-flex {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .label-admin {
+            color: white; 
+            font-size: 12px; 
+            margin-left: 5px; 
+            display: block; 
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: white;
+            font-weight: bold;
+            flex: 1;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .checkbox-container input {
+            width: auto !important;
+            margin-bottom: 0 !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -16,33 +61,92 @@
         <source src="video.mp4" type="video/mp4">
     </video>
 
-    <main class="container" style="overflow-y: auto; display: block; padding-top: 50px; padding-bottom: 50px;">
+    <main class="container" style="overflow-y: auto; display: block; padding-top: 30px; padding-bottom: 50px;">
         <div class="glass-box" style="max-width: 500px; margin: auto;">
             <h3 style="color:white; margin-bottom:15px; text-align: center;">GESTIÓN DE DOMINIOS</h3>
             
-            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                <input type="text" id="p_dominio" placeholder="DOMINIO (PATENTE)" maxlength="7" style="margin-bottom: 0; flex: 2;">
+            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                <input type="text" id="p_dominio" placeholder="DOMINIO (PATENTE)" maxlength="7" style="margin-bottom: 0; flex: 2; text-transform: uppercase;">
                 <button onclick="buscarParaModificar()" style="background: #2196F3; flex: 1; padding: 0; font-size: 12px; height: 45px;">BUSCAR</button>
             </div>
 
             <input type="text" id="p_marca" placeholder="MARCA (Ej: Toyota)">
             <input type="text" id="p_modelo" placeholder="MODELO (Ej: Hilux)">
-            
             <input type="text" id="p_chasis" placeholder="N° CHASIS">
-            
-            <label style="color: white; font-size: 12px; margin-left: 5px; display: block; margin-bottom: 5px;">FECHA DE SERVICIO:</label>
-            <input type="date" id="p_fecha">
-            
-            <input type="text" id="p_servicio" placeholder="SERVICIO CONTRATADO">
-            <textarea id="p_obs" placeholder="OBSERVACIONES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px; min-height: 80px;"></textarea>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
+                <label class="label-admin">DATOS DEL CLIENTE (PRIVADO):</label>
+                <input type="text" id="p_nombre_cliente" placeholder="NOMBRE COMPLETO">
+                <input type="tel" id="p_telefono_cliente" placeholder="TELÉFONO (Ej: +549...)">
+            </div>
+
+            <div id="lista-servicios">
+                <label class="label-admin">SERVICIOS REALIZADOS:</label>
+                
+                <div class="bloque-servicio">
+                    <input type="text" class="srv-nombre" placeholder="SERVICIO (Ej: Tratamiento)">
+                    
+                    <label class="label-admin">FECHA:</label>
+                    <input type="date" class="srv-fecha">
+                    
+                    <label class="label-admin">DURACIÓN:</label>
+                    <div class="row-flex">
+                        <select class="srv-duracion-num">
+                            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                            <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                        </select>
+                        <select class="srv-duracion-tipo">
+                            <option value="meses">Meses</option>
+                            <option value="años">Años</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-container">
+                        <input type="checkbox" class="srv-recordar">
+                        <span>¿Desea un recordatorio?</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" onclick="agregarCampoServicio()" style="background: #e67e22; margin-bottom: 20px; font-size: 14px;">+ AGREGAR OTRO SERVICIO</button>
+
+            <textarea id="p_obs" placeholder="OBSERVACIONES GENERALES" style="width:100%; border-radius:10px; padding:10px; margin-bottom:15px; min-height: 80px;"></textarea>
             
             <button id="btnGuardar" onclick="guardarDato()" style="background: #4CAF50; margin-bottom: 10px; width: 100%;">GUARDAR / ACTUALIZAR</button>
-            
             <button onclick="borrarDato()" style="background: #f44336; margin-bottom: 20px; width: 100%;">ELIMINAR DOMINIO</button>
-            
             <button onclick="logout()" style="background: gray; width: 100%;">CERRAR SESIÓN</button>
         </div>
     </main>
+
+    <script>
+        function agregarCampoServicio() {
+            const contenedor = document.getElementById('lista-servicios');
+            const nuevoDiv = document.createElement('div');
+            nuevoDiv.className = 'bloque-servicio';
+            nuevoDiv.innerHTML = `
+                <input type="text" class="srv-nombre" placeholder="SERVICIO (Ej: Tratamiento)">
+                <label class="label-admin">FECHA:</label>
+                <input type="date" class="srv-fecha">
+                <label class="label-admin">DURACIÓN:</label>
+                <div class="row-flex">
+                    <select class="srv-duracion-num">
+                        ${Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                    </select>
+                    <select class="srv-duracion-tipo">
+                        <option value="meses">Meses</option>
+                        <option value="años">Años</option>
+                    </select>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" class="srv-recordar">
+                    <span>¿Desea un recordatorio?</span>
+                </div>
+            `;
+            contenedor.appendChild(nuevoDiv);
+        }
+    </script>
 
     <script src="admin.js"></script>
 </body>
