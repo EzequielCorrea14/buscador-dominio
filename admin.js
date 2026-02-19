@@ -1,16 +1,40 @@
-// 1. Importaciones (Asegúrate de que las versiones coincidan con tu HTML)
+// 1. IMPORTACIONES UNIFICADAS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
+// 2. CONFIGURACIÓN (Pon tus datos aquí)
 const firebaseConfig = {
-    // PEGA AQUÍ TUS CREDENCIALES (apiKey, authDomain, etc.)
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROYECTO.firebaseapp.com",
+    projectId: "TU_PROYECTO_ID",
+    storageBucket: "TU_PROYECTO.appspot.com",
+    messagingSenderId: "TU_ID",
+    appId: "TU_APP_ID"
 };
 
-// 2. Inicialización Global
+// 3. INICIALIZACIÓN ÚNICA
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Función para guardar
+// Hacemos que la función sea accesible desde el botón del HTML
+window.guardarDato = guardarDato;
+
+// 4. FUNCIÓN PARA ENVIAR A MAKE (Webhook)
+async function enviarAGoogleSheets(datos) {
+    const WEBHOOK_URL = "https://hook.us2.make.com/yout8thq1edp47ncqm1j35235c561f91"; 
+    try {
+        await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        console.log("Enviado a Make con éxito");
+    } catch (e) {
+        console.warn("Error enviando a Make:", e);
+    }
+}
+
+// 5. FUNCIÓN PRINCIPAL PARA GUARDAR
 async function guardarDato() {
     const btn = document.getElementById('btnGuardar');
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
@@ -58,7 +82,7 @@ async function guardarDato() {
         btn.disabled = true;
         btn.innerText = "PROCESANDO...";
 
-        // 3. GUARDAR EN FIREBASE (Sintaxis corregida)
+        // GUARDAR EN FIREBASE
         await setDoc(doc(db, "vehiculos", dominio), {
             marca, 
             modelo, 
@@ -70,7 +94,7 @@ async function guardarDato() {
             ultimaActualizacion: serverTimestamp()
         });
 
-        // 4. ENVIAR A GOOGLE SHEETS (Make.com)
+        // ENVIAR A MAKE (Solo si 'recordar' está marcado)
         for (const srv of serviciosArray) {
             if (srv.recordar) {
                 await enviarAGoogleSheets({
@@ -94,5 +118,3 @@ async function guardarDato() {
         btn.innerText = "GUARDAR / ACTUALIZAR";
     }
 }
-
-// Asegúrate de que la función enviarAGoogleSheets esté definida abajo también
