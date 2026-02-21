@@ -44,7 +44,7 @@ async function enviarEmail(dominio, cliente, telefono, servicio) {
         service: 'gmail',
         auth: {
             user: 'gleamdetail.arg@gmail.com', // El mail del taller
-            pass: 'Victoria2410' // La clave de 16 letras de Google
+            pass: 'rigt soyj ftuf bnyk' // La clave de 16 letras de Google
         }
     });
 
