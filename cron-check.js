@@ -13,18 +13,26 @@ const db = admin.firestore();
 async function verificarVencimientos() {
     console.log("--- INICIANDO REVISIÓN DE VENCIMIENTOS ---");
     
-    // Calculamos la fecha de hoy + 30 días
-    const hoy = new Date();
-    const fechaObjetivo = new Date();
-    fechaObjetivo.setDate(hoy.getDate() + 30);
+    // FORZAMOS LA FECHA DE ARGENTINA (GMT-3)
+    // Esto evita que el servidor de GitHub use la hora de Londres o EE.UU.
+    const ahoraEnArgentina = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Argentina/Buenos_Aires"}));
     
-    // Formato YYYY-MM-DD
-    const isoFechaObjetivo = fechaObjetivo.toISOString().split('T')[0];
+    // Calculamos la fecha objetivo (Hoy + 30 días)
+    const fechaObjetivo = new Date(ahoraEnArgentina);
+    fechaObjetivo.setDate(ahoraEnArgentina.getDate() + 30);
+    
+    // Formateamos manualmente a YYYY-MM-DD para asegurar match total con Firebase
+    const y = fechaObjetivo.getFullYear();
+    const m = String(fechaObjetivo.getMonth() + 1).padStart(2, '0');
+    const d = String(fechaObjetivo.getDate()).padStart(2, '0');
+    const isoFechaObjetivo = `${y}-${m}-${d}`;
+
+    console.log(`Hoy en Argentina es: ${ahoraEnArgentina.toLocaleDateString()}`);
     console.log(`Buscando vencimientos para la fecha exacta: ${isoFechaObjetivo}`);
 
     try {
         const snapshot = await db.collection('vehiculos').get();
-        console.log(`Vehículos encontrados en la base de datos: ${snapshot.size}`);
+        console.log(`Vehículos totales en la base: ${snapshot.size}`);
 
         for (const doc of snapshot.docs) {
             const data = doc.data();
@@ -32,11 +40,11 @@ async function verificarVencimientos() {
             
             if (data.servicios && Array.isArray(data.servicios)) {
                 for (const srv of data.servicios) {
-                    // LOG DE REVISIÓN: Esto te dirá en la consola de GitHub qué está viendo el robot
-                    console.log(`Revisando [${dominio}] - Servicio: ${srv.nombre} | Vencimiento: ${srv.vencimiento} | Recordar: ${srv.recordar}`);
+                    // Log detallado para ver qué detecta el robot en cada vuelta
+                    console.log(`Revisando [${dominio}] -> Vence: ${srv.vencimiento} | Recordar: ${srv.recordar}`);
 
                     if (srv.vencimiento === isoFechaObjetivo && srv.recordar === true) {
-                        console.log(`¡COINCIDENCIA ENCONTRADA! Preparando envío para ${dominio}...`);
+                        console.log(`🎯 ¡MATCH ENCONTRADO! Enviando alerta para ${dominio}...`);
                         await enviarEmail(dominio, data.nombreCliente, data.telefonoCliente, srv);
                     }
                 }
@@ -44,7 +52,7 @@ async function verificarVencimientos() {
         }
         console.log("--- REVISIÓN FINALIZADA CON ÉXITO ---");
     } catch (error) {
-        console.error("Error al acceder a la base de datos:", error);
+        console.error("❌ Error crítico en la revisión:", error);
     }
 }
 
@@ -54,7 +62,7 @@ async function enviarEmail(dominio, cliente, telefono, servicio) {
         service: 'gmail',
         auth: {
             user: 'gleamdetail.arg@gmail.com',
-            pass: 'rigt soyj ftuf bnyk' // Tu clave de aplicación de 16 letras
+            pass: 'rigt soyj ftuf bnyk' 
         }
     });
 
@@ -63,27 +71,26 @@ async function enviarEmail(dominio, cliente, telefono, servicio) {
         to: 'gleamdetail.arg@gmail.com', 
         subject: `⚠️ ALERTA DE VENCIMIENTO: ${dominio}`,
         html: `
-            <div style="font-family: sans-serif; border: 1px solid #ccc; padding: 20px;">
-                <h2 style="color: #d32f2f;">Próximo Vencimiento (30 días)</h2>
-                <p><b>Dominio:</b> ${dominio}</p>
-                <p><b>Cliente:</b> ${cliente || 'Sin nombre'}</p>
-                <p><b>Teléfono:</b> ${telefono || 'Sin teléfono'}</p>
-                <hr>
-                <p><b>Servicio a realizar:</b> ${servicio.nombre}</p>
-                <p><b>Fecha de vencimiento:</b> ${servicio.vencimiento}</p>
+            <div style="font-family: sans-serif; border: 1px solid #000; padding: 20px; background-color: #f9f9f9;">
+                <h2 style="color: #d32f2f; text-transform: uppercase;">Aviso de Vencimiento (30 días)</h2>
+                <p><b>Vehículo (Dominio):</b> ${dominio}</p>
+                <p><b>Cliente:</b> ${cliente || 'No especificado'}</p>
+                <p><b>Teléfono:</b> ${telefono || 'No especificado'}</p>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <p style="font-size: 1.1em;"><b>Servicio próximo a vencer:</b> ${servicio.nombre}</p>
+                <p><b>Fecha de vencimiento:</b> <span style="background: yellow;">${servicio.vencimiento}</span></p>
                 <br>
-                <small>Este es un recordatorio automático generado por tu sistema de gestión.</small>
+                <p style="color: #666; font-style: italic;">Este es un mensaje automático del Sistema de Gestión Gleam Detail.</p>
             </div>
         `
     };
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`✅ Email enviado correctamente para el dominio: ${dominio}`);
+        console.log(`✅ Email enviado exitosamente a gleamdetail.arg@gmail.com para el dominio: ${dominio}`);
     } catch (error) {
-        console.error(`❌ Error enviando mail para ${dominio}:`, error);
+        console.error(`❌ Error al enviar el mail de ${dominio}:`, error);
     }
 }
 
-// Ejecutar la función
 verificarVencimientos();
