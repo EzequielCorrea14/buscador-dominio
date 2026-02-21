@@ -106,7 +106,7 @@ async function buscarParaModificar() {
     }
 }
 
-// --- GUARDAR ---
+// --- GUARDAR (VERSIÓN OPTIMIZADA PARA EL ROBOT DE GITHUB) ---
 async function guardarDato() {
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     if (!dominio) return alert("Falta el dominio");
@@ -116,24 +116,33 @@ async function guardarDato() {
 
     bloques.forEach(bloque => {
         const nombreSrv = bloque.querySelector('.srv-nombre').value.trim();
-        const fechaSrv = bloque.querySelector('.srv-fecha').value;
-        const duracionNum = bloque.querySelector('.srv-duracion-num').value;
+        const fechaSrv = bloque.querySelector('.srv-fecha').value; 
+        const duracionNum = parseInt(bloque.querySelector('.srv-duracion-num').value);
         const duracionTipo = bloque.querySelector('.srv-duracion-tipo').value;
         const recordar = bloque.querySelector('.srv-recordar').checked;
 
         if (nombreSrv && fechaSrv) {
-            let fechaVencimiento = new Date(fechaSrv);
+            // Lógica para calcular vencimiento exacto sin errores de zona horaria
+            const [year, month, day] = fechaSrv.split('-').map(Number);
+            let fechaVencimiento = new Date(year, month - 1, day); 
+
             if (duracionTipo === "meses") {
-                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + parseInt(duracionNum));
+                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + duracionNum);
             } else {
-                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + parseInt(duracionNum));
+                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + duracionNum);
             }
+
+            // Formatear a YYYY-MM-DD manualmente
+            const y = fechaVencimiento.getFullYear();
+            const m = String(fechaVencimiento.getMonth() + 1).padStart(2, '0');
+            const d = String(fechaVencimiento.getDate()).padStart(2, '0');
+            const fechaVencFinal = `${y}-${m}-${d}`;
 
             serviciosArray.push({
                 nombre: nombreSrv,
                 fecha: fechaSrv,
                 duracion: `${duracionNum} ${duracionTipo}`,
-                vencimiento: fechaVencimiento.toISOString().split('T')[0],
+                vencimiento: fechaVencFinal, // Este campo es el que busca el robot
                 recordar: recordar
             });
         }
@@ -142,6 +151,8 @@ async function guardarDato() {
     try {
         const btn = document.getElementById('btnGuardar');
         btn.innerText = "GUARDANDO...";
+        btn.disabled = true;
+
         await setDoc(doc(db, "vehiculos", dominio), {
             marca: document.getElementById('p_marca').value,
             modelo: document.getElementById('p_modelo').value,
@@ -152,15 +163,19 @@ async function guardarDato() {
             servicios: serviciosArray,
             timestamp: serverTimestamp()
         });
-        alert("¡Guardado correctamente!");
+
+        alert("¡Guardado correctamente! Alerta programada en el sistema.");
         location.reload();
     } catch (e) {
         alert("Error al guardar.");
         console.error(e);
+        const btn = document.getElementById('btnGuardar');
+        btn.innerText = "GUARDAR DATOS";
+        btn.disabled = false;
     }
 }
 
-// --- EXPORTAR TODO AL HTML (SOLUCIÓN AL ERROR) ---
+// --- EXPORTAR TODO AL HTML ---
 window.buscarParaModificar = buscarParaModificar;
 window.guardarDato = guardarDato;
 window.agregarCampoServicio = agregarCampoServicio;

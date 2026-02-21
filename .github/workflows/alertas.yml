@@ -1,0 +1,24 @@
+name: Alertas Diarias de Vencimiento
+on:
+  schedule:
+    - cron: '0 12 * * *' # Esto se ejecuta automáticamente todos los días (aprox 9:00 AM)
+  workflow_dispatch: # Esto activa un botón para que puedas probarlo manualmente ahora mismo
+
+jobs:
+  check-vencimientos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Instalar librerias necesarias
+        run: npm install firebase-admin nodemailer
+        
+      - name: Ejecutar el robot de alertas
+        run: node cron-check.js
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
