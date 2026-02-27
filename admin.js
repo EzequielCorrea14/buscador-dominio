@@ -121,66 +121,65 @@ async function buscarParaModificar() {
 
 // --- GUARDAR (CON VALIDACIONES ANTICHOQUE) ---
 async function guardarDato() {
-    const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
+    const dominio = document.getElementById('p_dominio')?.value.trim().toUpperCase();
     if (!dominio) return alert("Falta el dominio");
 
     const bloques = document.querySelectorAll('.bloque-servicio');
     let serviciosArray = [];
 
     bloques.forEach(bloque => {
-        // Validamos que los elementos existan antes de acceder al .value para evitar el error TypeError
-        const inputNombre = bloque.querySelector('.srv-nombre');
-        const inputFecha = bloque.querySelector('.srv-fecha');
-        const inputDurNum = bloque.querySelector('.srv-duracion-num');
-        const inputDurTipo = bloque.querySelector('.srv-duracion-tipo');
-        const inputRec = bloque.querySelector('.srv-recordar');
-        const inputObs = bloque.querySelector('.srv-obs');
-
-        const nombreSrv = inputNombre ? inputNombre.value.trim() : "";
-        const fechaSrv = inputFecha ? inputFecha.value : ""; 
-        const duracionNum = inputDurNum ? parseInt(inputDurNum.value) : 1;
-        const duracionTipo = inputDurTipo ? inputDurTipo.value : "meses";
-        const recordar = inputRec ? inputRec.checked : false;
-        const obsSrv = inputObs ? inputObs.value : ""; // Si no existe (registros viejos), guarda vacío
+        // Usamos ?.value para que si no encuentra el input, devuelva 'undefined' en lugar de un error
+        const nombreSrv = bloque.querySelector('.srv-nombre')?.value?.trim();
+        const fechaSrv = bloque.querySelector('.srv-fecha')?.value; 
+        const duracionNum = parseInt(bloque.querySelector('.srv-duracion-num')?.value || "1");
+        const duracionTipo = bloque.querySelector('.srv-duracion-tipo')?.value || "meses";
+        const recordar = bloque.querySelector('.srv-recordar')?.checked || false;
+        const obsSrv = bloque.querySelector('.srv-obs')?.value || ""; // ESTA ES LA LÍNEA 137
 
         if (nombreSrv && fechaSrv) {
-            const [year, month, day] = fechaSrv.split('-').map(Number);
-            let fechaVencimiento = new Date(year, month - 1, day); 
+            try {
+                const [year, month, day] = fechaSrv.split('-').map(Number);
+                let fechaVencimiento = new Date(year, month - 1, day); 
 
-            if (duracionTipo === "meses") {
-                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + duracionNum);
-            } else {
-                fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + duracionNum);
+                if (duracionTipo === "meses") {
+                    fechaVencimiento.setMonth(fechaVencimiento.getMonth() + duracionNum);
+                } else {
+                    fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + duracionNum);
+                }
+
+                const y = fechaVencimiento.getFullYear();
+                const m = String(fechaVencimiento.getMonth() + 1).padStart(2, '0');
+                const d = String(fechaVencimiento.getDate()).padStart(2, '0');
+                const fechaVencFinal = `${y}-${m}-${d}`;
+
+                serviciosArray.push({
+                    nombre: nombreSrv,
+                    fecha: fechaSrv,
+                    duracion: `${duracionNum} ${duracionTipo}`,
+                    vencimiento: fechaVencFinal,
+                    recordar: recordar,
+                    observaciones: obsSrv
+                });
+            } catch (err) {
+                console.warn("Error procesando un bloque de servicio, se omitirá:", err);
             }
-
-            const y = fechaVencimiento.getFullYear();
-            const m = String(fechaVencimiento.getMonth() + 1).padStart(2, '0');
-            const d = String(fechaVencimiento.getDate()).padStart(2, '0');
-            const fechaVencFinal = `${y}-${m}-${d}`;
-
-            serviciosArray.push({
-                nombre: nombreSrv,
-                fecha: fechaSrv,
-                duracion: `${duracionNum} ${duracionTipo}`,
-                vencimiento: fechaVencFinal,
-                recordar: recordar,
-                observaciones: obsSrv
-            });
         }
     });
 
     try {
         const btn = document.getElementById('btnGuardar');
-        btn.innerText = "GUARDANDO...";
-        btn.disabled = true;
+        if (btn) {
+            btn.innerText = "GUARDANDO...";
+            btn.disabled = true;
+        }
 
         await setDoc(doc(db, "vehiculos", dominio), {
-            marca: document.getElementById('p_marca').value,
-            modelo: document.getElementById('p_modelo').value,
-            chasis: document.getElementById('p_chasis').value,
-            nombreCliente: document.getElementById('p_nombre_cliente').value,
-            telefonoCliente: document.getElementById('p_telefono_cliente').value,
-            observaciones: document.getElementById('p_obs').value,
+            marca: document.getElementById('p_marca')?.value || "",
+            modelo: document.getElementById('p_modelo')?.value || "",
+            chasis: document.getElementById('p_chasis')?.value || "",
+            nombreCliente: document.getElementById('p_nombre_cliente')?.value || "",
+            telefonoCliente: document.getElementById('p_telefono_cliente')?.value || "",
+            observaciones: document.getElementById('p_obs')?.value || "",
             servicios: serviciosArray,
             timestamp: serverTimestamp()
         });
@@ -188,11 +187,13 @@ async function guardarDato() {
         alert("¡Datos y historial guardados con éxito!");
         location.reload();
     } catch (e) {
-        alert("Error al guardar.");
+        alert("Error al guardar en Firebase.");
         console.error(e);
         const btn = document.getElementById('btnGuardar');
-        btn.innerText = "GUARDAR DATOS";
-        btn.disabled = false;
+        if (btn) {
+            btn.innerText = "GUARDAR DATOS";
+            btn.disabled = false;
+        }
     }
 }
 
