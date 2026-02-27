@@ -18,7 +18,7 @@ function agregarCampoServicio() {
     const contenedor = document.getElementById('contenedor-servicios');
     if (!contenedor) return;
     const nuevoDiv = document.createElement('div');
-    nuevoDiv.className = 'bloque-servicio nuevo-ingreso'; // Clase para resaltar que es nuevo
+    nuevoDiv.className = 'bloque-servicio nuevo-ingreso'; 
     nuevoDiv.innerHTML = `
         <div class="header-servicio"><strong>NUEVO SERVICIO</strong></div>
         <input type="text" class="srv-nombre" placeholder="SERVICIO (Ej: Tratamiento Cerámico)">
@@ -67,12 +67,11 @@ async function buscarParaModificar() {
             contenedor.innerHTML = ""; 
 
             if (data.servicios && data.servicios.length > 0) {
-                // Ordenamos: los más nuevos arriba para el historial
-                const serviciosOrdenados = data.servicios.reverse();
+                // Hacemos una copia para no alterar el original y lo revertimos para mostrar el más nuevo arriba
+                const serviciosParaMostrar = [...data.servicios].reverse();
 
-                serviciosOrdenados.forEach((srv, index) => {
+                serviciosParaMostrar.forEach((srv) => {
                     const div = document.createElement('div');
-                    // Si ya venció, le ponemos una clase visual de historial
                     const hoy = new Date().toISOString().split('T')[0];
                     const esVencido = srv.vencimiento < hoy;
                     div.className = `bloque-servicio ${esVencido ? 'modo-historial' : ''}`;
@@ -83,7 +82,7 @@ async function buscarParaModificar() {
 
                     div.innerHTML = `
                         <div class="header-servicio">
-                            <strong>Servicio Realizado el ${srv.fecha}</strong>
+                            <strong>Servicio Realizado el ${srv.fecha || 'Sin fecha'}</strong>
                             ${esVencido ? '<span style="color:red; font-size:10px;">[VENCIDO]</span>' : '<span style="color:green; font-size:10px;">[VIGENTE]</span>'}
                         </div>
                         <input type="text" class="srv-nombre" value="${srv.nombre || ''}">
@@ -120,7 +119,7 @@ async function buscarParaModificar() {
     }
 }
 
-// --- GUARDAR (MANTIENE TODO EL ARRAY DE SERVICIOS) ---
+// --- GUARDAR (CON VALIDACIONES ANTICHOQUE) ---
 async function guardarDato() {
     const dominio = document.getElementById('p_dominio').value.trim().toUpperCase();
     if (!dominio) return alert("Falta el dominio");
@@ -129,12 +128,20 @@ async function guardarDato() {
     let serviciosArray = [];
 
     bloques.forEach(bloque => {
-        const nombreSrv = bloque.querySelector('.srv-nombre').value.trim();
-        const fechaSrv = bloque.querySelector('.srv-fecha').value; 
-        const duracionNum = parseInt(bloque.querySelector('.srv-duracion-num').value);
-        const duracionTipo = bloque.querySelector('.srv-duracion-tipo').value;
-        const recordar = bloque.querySelector('.srv-recordar').checked;
-        const obsSrv = bloque.querySelector('.srv-obs').value;
+        // Validamos que los elementos existan antes de acceder al .value para evitar el error TypeError
+        const inputNombre = bloque.querySelector('.srv-nombre');
+        const inputFecha = bloque.querySelector('.srv-fecha');
+        const inputDurNum = bloque.querySelector('.srv-duracion-num');
+        const inputDurTipo = bloque.querySelector('.srv-duracion-tipo');
+        const inputRec = bloque.querySelector('.srv-recordar');
+        const inputObs = bloque.querySelector('.srv-obs');
+
+        const nombreSrv = inputNombre ? inputNombre.value.trim() : "";
+        const fechaSrv = inputFecha ? inputFecha.value : ""; 
+        const duracionNum = inputDurNum ? parseInt(inputDurNum.value) : 1;
+        const duracionTipo = inputDurTipo ? inputDurTipo.value : "meses";
+        const recordar = inputRec ? inputRec.checked : false;
+        const obsSrv = inputObs ? inputObs.value : ""; // Si no existe (registros viejos), guarda vacío
 
         if (nombreSrv && fechaSrv) {
             const [year, month, day] = fechaSrv.split('-').map(Number);
@@ -157,7 +164,7 @@ async function guardarDato() {
                 duracion: `${duracionNum} ${duracionTipo}`,
                 vencimiento: fechaVencFinal,
                 recordar: recordar,
-                observaciones: obsSrv // Guardamos la obs del servicio
+                observaciones: obsSrv
             });
         }
     });
@@ -173,7 +180,7 @@ async function guardarDato() {
             chasis: document.getElementById('p_chasis').value,
             nombreCliente: document.getElementById('p_nombre_cliente').value,
             telefonoCliente: document.getElementById('p_telefono_cliente').value,
-            observaciones: document.getElementById('p_obs').value, // Obs generales del auto
+            observaciones: document.getElementById('p_obs').value,
             servicios: serviciosArray,
             timestamp: serverTimestamp()
         });
